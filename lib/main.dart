@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listree/home/home.dart';
+import 'package:listree/repository/datasources/monthly_bills_dao.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Get.put(await MonthlyBillsDAO()());
+
   runApp(MyApp());
 }
 

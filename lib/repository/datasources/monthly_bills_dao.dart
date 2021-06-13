@@ -1,38 +1,49 @@
+import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:listree/repository/datasources/config_dao.dart';
+import 'package:listree/repository/entities/models/models.dart';
 import 'package:sqflite/sqflite.dart';
 
-class MonthlyBillsDAO extends ConfigDao {
-  static const String _table = 'monthly_bills.db';
+class MonthlyBillsDAO extends GetxController with ConfigDao {
+  static const String _table = 'monthly_bills';
 
-  Database? _db;
+  final RxList<MonthlyBill> _data = const <MonthlyBill>[].obs;
 
-  Database? get db => _db;
+  late final Database _db;
 
-  void call() async => _db = await _getDatabase();
+  Database get db => _db;
+
+  RxList<MonthlyBill> get data => _data;
+
+  Future<MonthlyBillsDAO> call() async {
+    _db = await _getDatabase();
+    final _listMap = await get();
+    _data.value = MonthlyBill.fromList(_listMap ?? []);
+    return this;
+  }
 
   Future<Database> _getDatabase() async {
     return await ConfigDao.getOrCreateDatabase(_table, [
-      'title TEXT',
-      'description TEXT',
-      'dateTime DATETIME',
-      'dateLimit DATETIME',
-      'repeat BOOLEAN',
-      'repeatCount INTEGER',
-      'value DOUBLE',
+      'title text not null',
+      'description text',
+      'dateTime text not null',
+      'dateLimit text',
+      'repeat integer not null',
+      'repeatCount integer',
+      'value integer not null',
     ]);
   }
 
   @override
   Future<bool> delete(int _id) async {
     final int _deleted = await _db
-            ?.delete(_table, where: '${ConfigDao.id} = ?', whereArgs: [_id]) ??
-        0;
+        .delete(_table, where: '${ConfigDao.id} = ?', whereArgs: [_id]);
 
     return _deleted == 1;
   }
 
   @override
-  Future<List<Map<String, Object?>>?> getById(int _id) async => await db?.query(
+  Future<List<Map<String, Object?>>?> getById(int _id) async => await db.query(
         _table,
         columns: [ConfigDao.id],
         where: '${ConfigDao.id} = ?',
@@ -41,16 +52,19 @@ class MonthlyBillsDAO extends ConfigDao {
 
   @override
   Future<bool> insert(Map<String, dynamic> _obj) async {
-    final int _result = await db?.insert(_table, _obj) ?? 0;
+    final int _result = await db.insert(_table, _obj);
     return _result == 1;
   }
 
   @override
-  Future<bool> update(int _id, Map<String, dynamic> _obj) async {
-    final int _result = await db?.update(_table, _obj) ?? 0;
+  Future<bool> updateData(int _id, Map<String, dynamic> _obj) async {
+    final int _result = await db.update(_table, _obj);
     return _result == 1;
   }
 
   @override
-  Future<void> close() async => await _db?.close();
+  Future<void> close() async => await _db.close();
+
+  @override
+  Future<List<Map<String, Object?>>?> get() async => await db.query('teste');
 }

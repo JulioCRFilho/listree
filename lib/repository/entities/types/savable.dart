@@ -1,23 +1,20 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
-
 abstract class Savable {
-  final Key _key;
+  late final int id;
+  late final String _title;
+  late final String description;
 
-  String _title = '';
-  String? description;
-
-  Savable(this._key);
+  Savable();
 
   /// Getters
   String get title => _title;
 
   /// Setters
   set title(String newTitle) {
-    final exceed = newTitle.length - 12;
-    _title = title.substring(0, exceed > 0 ? exceed : newTitle.length - 1);
+    try {
+      final exceed = newTitle.length - 12;
+      _title = title.substring(0, exceed > 0 ? exceed : newTitle.length - 1);
+    } catch (e) {
+      throw e;
+    }
   }
-
-  //TODO: implement sharedPrefs methods
 }

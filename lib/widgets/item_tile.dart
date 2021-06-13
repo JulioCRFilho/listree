@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:listree/widgets/item_button.dart';
 
 class ItemTile extends StatelessWidget {
-  final item;
+  final dynamic item;
 
   const ItemTile(this.item);
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(item.key),
+      key: Key(item.id),
       child: _item(item),
       background: Container(color: Colors.red),
       confirmDismiss: (direction) => _confirmDismiss(direction, item),
@@ -24,9 +25,40 @@ class ItemTile extends StatelessWidget {
       children: [
         _pin(_showPin),
         _body(item, _shrunken),
-        //TODO: implement options
+        _options(_showOptions),
       ],
     );
+  }
+
+  Widget _options(bool _showOptions) {
+    return _showOptions
+        ? Flexible(
+            fit: FlexFit.loose,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                ItemButton(
+                  color: Colors.redAccent,
+                  iconColor: Colors.grey,
+                  icon: Icons.details,
+                  onPress: () {},
+                ),
+                ItemButton(
+                  color: Colors.redAccent,
+                  iconColor: Colors.grey,
+                  icon: Icons.edit,
+                  onPress: () {},
+                ),
+                ItemButton(
+                  color: Colors.redAccent,
+                  iconColor: Colors.grey,
+                  icon: Icons.delete,
+                  onPress: () {},
+                ),
+              ],
+            ),
+          )
+        : Container();
   }
 
   Expanded _body(item, bool _shrunken) {
@@ -93,24 +125,26 @@ class ItemTile extends StatelessWidget {
 
   Widget _pin(bool _showPin) {
     return _showPin
-        ? InkWell(
-            child: Container(
-              height: 50,
-              width: 50,
-              color: Colors.blue,
-              child: Icon(Icons.pin_drop),
-            ),
+        ? ItemButton(
+            color: Colors.blue,
+            iconColor: Colors.grey,
+            icon: Icons.location_pin,
+            onPress: () {},
           )
         : Container();
   }
 
   Future<bool> _confirmDismiss(DismissDirection direction, item) async {
     if (direction == DismissDirection.startToEnd) {
-      item.showPin = true;
+      item
+        ..showPin = true
+        ..showOptions = false;
     }
 
     if (direction == DismissDirection.endToStart) {
-      item.showOptions = true;
+      item
+        ..showOptions = true
+        ..showPin = false;
     }
 
     return false;
