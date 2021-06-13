@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:listree/widgets/item_tile.dart';
 
 class ListItems extends StatelessWidget {
-  final List items;
+  final  List items;
 
   const ListItems(this.items);
 

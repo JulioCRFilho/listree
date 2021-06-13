@@ -2,6 +2,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class ConfigDao {
+  static const String _id = 'id';
+
+  static String get id => _id;
+
   static Future<Database> getOrCreateDatabase(
     String _name,
     List<String> _args, {
@@ -13,7 +17,7 @@ abstract class ConfigDao {
       onCreate: (db, version) {
         return db.execute(
           'CREATE TABLE '
-          '$_name(id INTEGER PRIMARY KEY AUTOINCREMENT, '
+          '$_name($id INTEGER PRIMARY KEY AUTOINCREMENT, '
           '${_args.join(", ")}'
           ')',
         );
@@ -21,4 +25,14 @@ abstract class ConfigDao {
       version: version,
     );
   }
+
+  Future<List<Map<String, Object?>>?> getById(int _id);
+
+  Future<bool> insert(Map<String, dynamic> _obj);
+
+  Future<bool> update(int _id, Map<String, dynamic> _obj);
+
+  Future<bool> delete(int _id);
+
+  Future<void> close();
 }

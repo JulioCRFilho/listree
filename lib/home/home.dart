@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:listree/repository/entities/models/models.dart';
 import 'package:listree/widgets/list_items.dart';
 
 class Home extends StatelessWidget {
-  final list = List.generate(20, (index) => index); //TODO: remove mock
+  final List<MonthlyBill> list = List.generate(
+      20, (index) => MonthlyBill(Key('$index'))); //TODO: remove mock
 
   @override
   Widget build(BuildContext context) {
