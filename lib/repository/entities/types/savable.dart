@@ -1,8 +1,14 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+
 abstract class Savable {
+  final Key _key;
+
   String _title = '';
   String? description;
 
-  Savable();
+  Savable(this._key);
 
   /// Getters
   String get title => _title;
