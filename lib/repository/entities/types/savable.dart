@@ -1,7 +1,7 @@
 abstract class Savable {
   late final int id;
-  late final String _title;
-  late final String description;
+  late String _title;
+  late String? description;
 
   Savable();
 
@@ -12,7 +12,7 @@ abstract class Savable {
   set title(String newTitle) {
     try {
       final exceed = newTitle.length - 12;
-      _title = title.substring(0, exceed > 0 ? exceed : newTitle.length - 1);
+      _title = newTitle.substring(0, exceed > 0 ? exceed : newTitle.length);
     } catch (e) {
       throw e;
     }

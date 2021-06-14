@@ -17,8 +17,8 @@ abstract class ConfigDao {
         _path,
         onCreate: (db, version) async {
           return await db.execute('''
-            create table
-            $_name(id integer primary key autoincrement
+            create table $_name (
+            id integer primary key autoincrement,
             ${_args.join(", ")}
             )''');
         },

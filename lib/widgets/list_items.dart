@@ -10,9 +10,39 @@ class ListItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return items.length > 0
-        ? ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (ctx, i) => Obx(() => ItemTile(items[i])))
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                color: Colors.blueGrey,
+                height: 40,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text('Título')),
+                      Container(
+                        width: 80,
+                        alignment: Alignment.centerRight,
+                        child: Text('Data'),
+                      ),
+                      Container(
+                        width: 100,
+                        alignment: Alignment.centerRight,
+                        child: Text('Valor'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Flexible(
+                child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (ctx, i) => Obx(() => ItemTile(items[i]))),
+              ),
+            ],
+          )
         : Padding(
             padding: const EdgeInsets.only(top: 24, left: 8, right: 8),
             child: Row(

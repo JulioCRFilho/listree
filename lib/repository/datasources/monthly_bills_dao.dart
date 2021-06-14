@@ -17,21 +17,34 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
 
   Future<MonthlyBillsDAO> call() async {
     _db = await _getDatabase();
-    final _listMap = await get();
-    _data.value = MonthlyBill.fromList(_listMap ?? []);
+    _data.value = MonthlyBill.fromList(await get() ?? []);
+
+    //TODO: remove mock
+    // for (var i in Iterable.generate(9)) {
+    //   db.insert(_table, <String, Object?>{
+    //     'title': 'mock mesmo $i',
+    //     'dateTime': DateTime.now().toIso8601String(),
+    //     'repeatCount': 2 * i,
+    //     'value': 7.20 * i
+    //   });
+    // }
+
     return this;
   }
 
   Future<Database> _getDatabase() async {
-    return await ConfigDao.getOrCreateDatabase(_table, [
-      'title text not null',
-      'description text',
-      'dateTime text not null',
-      'dateLimit text',
-      'repeat integer not null',
-      'repeatCount integer',
-      'value integer not null',
-    ]);
+    return await ConfigDao.getOrCreateDatabase(
+      _table,
+      [
+        'title text not null',
+        'description text',
+        'dateTime text not null',
+        'dateLimit text',
+        'repeatCount integer not null',
+        'value integer not null',
+      ],
+      version: 2,
+    );
   }
 
   @override
@@ -66,5 +79,5 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
   Future<void> close() async => await _db.close();
 
   @override
-  Future<List<Map<String, Object?>>?> get() async => await db.query('teste');
+  Future<List<Map<String, Object?>>?> get() async => await db.query(_table);
 }

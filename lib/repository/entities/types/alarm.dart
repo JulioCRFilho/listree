@@ -1,29 +1,19 @@
 abstract class Alarm {
   late DateTime dateTime;
-  late DateTime _dateLimit;
-  late bool repeat;
-  late int _repeatCount;
+  late DateTime? _dateLimit;
+  late int repeatCount = 0;
 
   /// Getters
-  DateTime get dateLimit => _dateLimit;
-
-  int get repeatCount => _repeatCount;
+  DateTime? get dateLimit => _dateLimit;
 
   ///Setters
-  set dateLimit(DateTime newDateLimit) {
+  set dateLimit(DateTime? newDateLimit) {
     try {
-      final bool isAfter = newDateLimit.isAfter(dateTime);
+      final bool isAfter = newDateLimit?.isAfter(dateTime) ?? false;
       if (isAfter) _dateLimit = newDateLimit;
     } catch (e) {
       throw e;
     }
-  }
-
-  set repeatCount(int newCount) {
-    if (repeat)
-      throw Exception('Repeat must be true to set a repeat count');
-    else
-      _repeatCount = newCount;
   }
 
 //TODO: implement alarm manager

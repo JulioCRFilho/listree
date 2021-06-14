@@ -9,7 +9,7 @@ class ItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(item.id),
+      key: Key(item.id.toString()),
       child: _item(item),
       background: Container(color: Colors.red),
       confirmDismiss: (direction) => _confirmDismiss(direction, item),
@@ -83,11 +83,13 @@ class ItemTile extends StatelessWidget {
   Widget _value(bool _shrunken, item) {
     return _shrunken
         ? Container()
-        : Expanded(
+        : Container(
+            width: 100,
+            alignment: Alignment.centerRight,
             child: Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                item.value,
+                'R\$ ${item.formattedValue}',
                 maxLines: 1,
               ),
             ),
@@ -95,29 +97,35 @@ class ItemTile extends StatelessWidget {
   }
 
   Widget _date(bool _shrunken, item) {
+    final DateTime d = item.dateTime;
+    final String date = '${d.day}/${d.month}/${d.year.toString().substring(2)}';
     return _shrunken
         ? Container()
-        : Expanded(
+        : Container(
+            width: 80,
+            alignment: Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                item.date,
+                date,
                 maxLines: 1,
               ),
             ),
           );
   }
 
-  Padding _title(item) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: Text(
-        item.title,
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
+  Widget _title(item) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Text(
+          item.title,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
         ),
       ),
     );
