@@ -26,7 +26,8 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
           'title': 'mock mesmo $i',
           'dateTime': DateTime.now().toIso8601String(),
           'repeatCount': 2 * i,
-          'value': 7.20 * i
+          'value': 7.20 * i,
+          'pinned': i % 3 == 0,
         });
       }
 
@@ -46,8 +47,9 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
         'dateLimit text',
         'repeatCount integer not null',
         'value integer not null',
+        'pinned integer not null',
       ],
-      version: 2,
+      version: 3,
     );
   }
 

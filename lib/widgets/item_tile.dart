@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:listree/repository/datasources/monthly_bills_dao.dart';
+import 'package:listree/repository/entities/models/models.dart';
 import 'package:listree/widgets/item_button.dart';
 
 class ItemTile extends StatelessWidget {
-  final dynamic item;
+  final MonthlyBill item;
 
   ItemTile(this.item);
 
@@ -15,7 +17,7 @@ class ItemTile extends StatelessWidget {
       child: _item(),
       background: Container(color: Colors.blue),
       secondaryBackground: Container(color: Colors.red),
-      confirmDismiss: (direction) => _confirmDismiss(direction),
+      confirmDismiss: (direction) => _confirmDismiss(direction: direction),
     );
   }
 
@@ -45,23 +47,16 @@ class ItemTile extends StatelessWidget {
               VerticalDivider(width: 2),
               ItemButton(
                 color: Colors.redAccent,
-                iconColor: _showOptions ? Colors.white : Colors.green,
-                icon: Icons.details,
-                onPress: () => hideMenus(),
+                iconColor: Colors.white,
+                icon: Icons.list_alt,
+                onPress: () => showDetails(),
               ),
               VerticalDivider(width: 2),
               ItemButton(
                 color: Colors.redAccent,
-                iconColor: _showOptions ? Colors.white : Colors.green,
-                icon: Icons.edit,
-                onPress: () => hideMenus(),
-              ),
-              VerticalDivider(width: 2),
-              ItemButton(
-                color: Colors.redAccent,
-                iconColor: _showOptions ? Colors.white : Colors.green,
+                iconColor: Colors.white,
                 icon: Icons.delete,
-                onPress: () => hideMenus(),
+                onPress: () => deleteItem(),
               ),
               VerticalDivider(width: 2),
             ],
@@ -71,19 +66,22 @@ class ItemTile extends StatelessWidget {
 
   Expanded _body(bool _shrunken) {
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 1),
-        height: 50,
-        color: Colors.grey[300],
-        alignment: Alignment.centerLeft,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _title(),
-            _date(_shrunken),
-            _value(_shrunken),
-          ],
+      child: InkWell(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 1),
+          height: 50,
+          color: Colors.grey[300],
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _title(),
+              _date(_shrunken),
+              _value(_shrunken),
+            ],
+          ),
         ),
+        onTap: () => item.expand(),
       ),
     );
   }
@@ -146,9 +144,9 @@ class ItemTile extends StatelessWidget {
               VerticalDivider(width: 2),
               ItemButton(
                 color: Colors.blue,
-                iconColor: _showPin ? Colors.white : Colors.green,
+                iconColor: item.pinned ? Colors.green : Colors.white,
                 icon: Icons.location_pin,
-                onPress: () => hideMenus(),
+                onPress: () => fixBill(),
               ),
               VerticalDivider(width: 2),
             ],
@@ -156,7 +154,12 @@ class ItemTile extends StatelessWidget {
         : Container();
   }
 
-  Future<bool> _confirmDismiss(DismissDirection direction) async {
+  Future<bool> _confirmDismiss({
+    DismissDirection direction = DismissDirection.none,
+    bool dismiss = false,
+  }) async {
+    expandOthers();
+
     switch (direction) {
       case DismissDirection.startToEnd:
         item.showPin = true;
@@ -168,13 +171,29 @@ class ItemTile extends StatelessWidget {
         break;
     }
 
-    return false;
+    return dismiss;
   }
 
-  hideMenus() {
-    item.showPin = false;
-    item.showOptions = false;
+  void expandOthers() {
+    final MonthlyBillsDAO _dao = Get.find();
+    final List<MonthlyBill> _currentList = _dao.data;
 
-    //TODO: remove this mock and implement the real functions
+    _currentList.forEach((bill) {
+      if (bill.id != item.id) {
+        bill.expand();
+      }
+    });
+  }
+
+  void fixBill() {
+    //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
+  }
+
+  void showDetails() {
+    //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
+  }
+
+  void deleteItem() {
+    //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
   }
 }

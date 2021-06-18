@@ -21,4 +21,10 @@ abstract class Drag {
     _showOptions.value = _show;
     _showPin.value = false;
   }
+
+  /// Methods
+  void expand() {
+    _showPin.value = false;
+    _showOptions.value = false;
+  }
 }

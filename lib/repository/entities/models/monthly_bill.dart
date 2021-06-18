@@ -11,7 +11,8 @@ class MonthlyBill extends RxController with Alarm, Money, Savable, Drag {
     ..description = _map['description']
     ..dateTime = DateTime.parse(_map['dateTime'])
     ..repeatCount = _map['repeatCount'] ?? 0
-    ..value = double.tryParse(_map['value'].toString()) ?? 0;
+    ..value = double.tryParse(_map['value'].toString()) ?? 0
+    ..pin = _map['pinned'] == 1;
 
   static List<MonthlyBill> fromList(List<dynamic> _list) {
     return _list.map((e) => MonthlyBill.fromMap(e)).toList();
