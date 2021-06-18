@@ -1,19 +1,19 @@
+import 'package:get/get.dart';
+
 abstract class Alarm {
-  late DateTime dateTime;
-  late DateTime? _dateLimit;
-  late int repeatCount = 0;
+  Rx<DateTime> _dateTime = DateTime.now().obs;
+  RxInt _repeatCount = 0.obs;
 
   /// Getters
-  DateTime? get dateLimit => _dateLimit;
+  DateTime get dateTime => _dateTime.value;
+
+  int get repeatCount => _repeatCount.value;
 
   ///Setters
-  set dateLimit(DateTime? newDateLimit) {
-    try {
-      final bool isAfter = newDateLimit?.isAfter(dateTime) ?? false;
-      if (isAfter) _dateLimit = newDateLimit;
-    } catch (e) {
-      throw e;
-    }
+  set dateTime(DateTime newDateTime) => _dateTime.value = newDateTime;
+
+  set repeatCount(int value) {
+    _repeatCount.value = value;
   }
 
 //TODO: implement alarm manager

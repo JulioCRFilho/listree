@@ -1,86 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:listree/widgets/item_button.dart';
 
 class ItemTile extends StatelessWidget {
   final dynamic item;
 
-  const ItemTile(this.item);
+  ItemTile(this.item);
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(item.id.toString()),
-      child: _item(item),
-      background: Container(color: Colors.red),
-      confirmDismiss: (direction) => _confirmDismiss(direction, item),
+      child: _item(),
+      background: Container(color: Colors.blue),
+      secondaryBackground: Container(color: Colors.red),
+      confirmDismiss: (direction) => _confirmDismiss(direction),
     );
   }
 
-  Row _item(item) {
-    final bool _showPin = item.showPin;
-    final bool _showOptions = item.showOptions;
-    final _shrunken = _showPin || _showOptions;
+  Widget _item() {
+    return Obx(
+      () {
+        final bool _showPin = item.showPin;
+        final bool _showOptions = item.showOptions;
+        final bool _shrunken = _showPin || _showOptions;
 
-    return Row(
-      children: [
-        _pin(_showPin),
-        _body(item, _shrunken),
-        _options(_showOptions),
-      ],
+        return Row(
+          children: [
+            _pin(_showPin),
+            _body(_shrunken),
+            _options(_showOptions),
+          ],
+        );
+      },
     );
   }
 
   Widget _options(bool _showOptions) {
     return _showOptions
-        ? Flexible(
-            fit: FlexFit.loose,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                ItemButton(
-                  color: Colors.redAccent,
-                  iconColor: Colors.grey,
-                  icon: Icons.details,
-                  onPress: () {},
-                ),
-                ItemButton(
-                  color: Colors.redAccent,
-                  iconColor: Colors.grey,
-                  icon: Icons.edit,
-                  onPress: () {},
-                ),
-                ItemButton(
-                  color: Colors.redAccent,
-                  iconColor: Colors.grey,
-                  icon: Icons.delete,
-                  onPress: () {},
-                ),
-              ],
-            ),
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              VerticalDivider(width: 2),
+              ItemButton(
+                color: Colors.redAccent,
+                iconColor: _showOptions ? Colors.white : Colors.green,
+                icon: Icons.details,
+                onPress: () => hideMenus(),
+              ),
+              VerticalDivider(width: 2),
+              ItemButton(
+                color: Colors.redAccent,
+                iconColor: _showOptions ? Colors.white : Colors.green,
+                icon: Icons.edit,
+                onPress: () => hideMenus(),
+              ),
+              VerticalDivider(width: 2),
+              ItemButton(
+                color: Colors.redAccent,
+                iconColor: _showOptions ? Colors.white : Colors.green,
+                icon: Icons.delete,
+                onPress: () => hideMenus(),
+              ),
+              VerticalDivider(width: 2),
+            ],
           )
         : Container();
   }
 
-  Expanded _body(item, bool _shrunken) {
+  Expanded _body(bool _shrunken) {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 1),
         height: 50,
-        color: Colors.grey,
+        color: Colors.grey[300],
         alignment: Alignment.centerLeft,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _title(item),
-            _date(_shrunken, item),
-            _value(_shrunken, item),
+            _title(),
+            _date(_shrunken),
+            _value(_shrunken),
           ],
         ),
       ),
     );
   }
 
-  Widget _value(bool _shrunken, item) {
+  Widget _value(bool _shrunken) {
     return _shrunken
         ? Container()
         : Container(
@@ -96,7 +104,7 @@ class ItemTile extends StatelessWidget {
           );
   }
 
-  Widget _date(bool _shrunken, item) {
+  Widget _date(bool _shrunken) {
     final DateTime d = item.dateTime;
     final String date = '${d.day}/${d.month}/${d.year.toString().substring(2)}';
     return _shrunken
@@ -114,7 +122,7 @@ class ItemTile extends StatelessWidget {
           );
   }
 
-  Widget _title(item) {
+  Widget _title() {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(left: 8),
@@ -122,7 +130,7 @@ class ItemTile extends StatelessWidget {
           item.title,
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16,
           ),
@@ -133,28 +141,40 @@ class ItemTile extends StatelessWidget {
 
   Widget _pin(bool _showPin) {
     return _showPin
-        ? ItemButton(
-            color: Colors.blue,
-            iconColor: Colors.grey,
-            icon: Icons.location_pin,
-            onPress: () {},
+        ? Row(
+            children: [
+              VerticalDivider(width: 2),
+              ItemButton(
+                color: Colors.blue,
+                iconColor: _showPin ? Colors.white : Colors.green,
+                icon: Icons.location_pin,
+                onPress: () => hideMenus(),
+              ),
+              VerticalDivider(width: 2),
+            ],
           )
         : Container();
   }
 
-  Future<bool> _confirmDismiss(DismissDirection direction, item) async {
-    if (direction == DismissDirection.startToEnd) {
-      item
-        ..showPin = true
-        ..showOptions = false;
-    }
-
-    if (direction == DismissDirection.endToStart) {
-      item
-        ..showOptions = true
-        ..showPin = false;
+  Future<bool> _confirmDismiss(DismissDirection direction) async {
+    switch (direction) {
+      case DismissDirection.startToEnd:
+        item.showPin = true;
+        break;
+      case DismissDirection.endToStart:
+        item.showOptions = true;
+        break;
+      default:
+        break;
     }
 
     return false;
+  }
+
+  hideMenus() {
+    item.showPin = false;
+    item.showOptions = false;
+
+    //TODO: remove this mock and implement the real functions
   }
 }

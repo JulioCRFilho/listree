@@ -20,14 +20,18 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
     _data.value = MonthlyBill.fromList(await get() ?? []);
 
     //TODO: remove mock
-    // for (var i in Iterable.generate(9)) {
-    //   db.insert(_table, <String, Object?>{
-    //     'title': 'mock mesmo $i',
-    //     'dateTime': DateTime.now().toIso8601String(),
-    //     'repeatCount': 2 * i,
-    //     'value': 7.20 * i
-    //   });
-    // }
+    if (data.length == 0) {
+      for (var i in Iterable.generate(9)) {
+        db.insert(_table, <String, Object?>{
+          'title': 'mock mesmo $i',
+          'dateTime': DateTime.now().toIso8601String(),
+          'repeatCount': 2 * i,
+          'value': 7.20 * i
+        });
+      }
+
+      _data.value = MonthlyBill.fromList(await get() ?? []);
+    }
 
     return this;
   }

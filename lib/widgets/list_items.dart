@@ -21,16 +21,16 @@ class ListItems extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: Text('Título')),
+                      const Expanded(child: const Text('Título')),
                       Container(
                         width: 80,
                         alignment: Alignment.centerRight,
-                        child: Text('Data'),
+                        child: const Text('Data'),
                       ),
                       Container(
                         width: 100,
                         alignment: Alignment.centerRight,
-                        child: Text('Valor'),
+                        child: const Text('Valor'),
                       ),
                     ],
                   ),
@@ -38,8 +38,9 @@ class ListItems extends StatelessWidget {
               ),
               Flexible(
                 child: ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (ctx, i) => Obx(() => ItemTile(items[i]))),
+                  itemCount: items.length,
+                  itemBuilder: (ctx, i) => ItemTile(items[i]),
+                ),
               ),
             ],
           )
@@ -48,9 +49,9 @@ class ListItems extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Nenhum item salvo nessa lista ainda.',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                   ),
                 ),

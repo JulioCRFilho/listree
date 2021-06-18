@@ -1,18 +1,18 @@
+import 'package:get/get.dart';
+
 abstract class Savable {
   late final int id;
-  late String _title;
-  late String? description;
-
-  Savable();
+  RxString _title = ''.obs;
+  RxString? description = ''.obs;
 
   /// Getters
-  String get title => _title;
+  String get title => _title.value;
 
   /// Setters
   set title(String newTitle) {
     try {
       final exceed = newTitle.length - 12;
-      _title = newTitle.substring(0, exceed > 0 ? exceed : newTitle.length);
+      _title.value = newTitle.substring(0, exceed > 0 ? exceed : newTitle.length);
     } catch (e) {
       throw e;
     }

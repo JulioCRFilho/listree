@@ -1,7 +1,8 @@
+import 'package:get/get.dart';
 import 'package:listree/repository/entities/types/drag.dart';
 import 'package:listree/repository/entities/types/types.dart';
 
-class MonthlyBill extends Savable with Alarm, Money, Drag {
+class MonthlyBill extends RxController with Alarm, Money, Savable, Drag {
   MonthlyBill();
 
   factory MonthlyBill.fromMap(Map<String, dynamic> _map) => MonthlyBill()
@@ -9,7 +10,6 @@ class MonthlyBill extends Savable with Alarm, Money, Drag {
     ..title = _map['title']
     ..description = _map['description']
     ..dateTime = DateTime.parse(_map['dateTime'])
-    ..dateLimit = DateTime.tryParse(_map['dateLimit'] ?? '')
     ..repeatCount = _map['repeatCount'] ?? 0
     ..value = double.tryParse(_map['value'].toString()) ?? 0;
 

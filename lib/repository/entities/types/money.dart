@@ -1,14 +1,16 @@
+import 'package:get/get.dart';
+
 abstract class Money {
-  late double _rawValue;
+  late RxDouble _rawValue = 0.0.obs;
   late final String _prefix = 'R\$';
-  late String _formattedValue = 'R\$ 0,00';
+  late RxString _formattedValue = 'R\$ 0,00'.obs;
 
   /// Getters
-  double get rawValue => _rawValue;
+  double get rawValue => _rawValue.value;
 
   String get prefix => _prefix;
 
-  String get formattedValue => _formattedValue;
+  String get formattedValue => _formattedValue.value;
 
   /// Setters
   set value(double newValue) {
@@ -17,8 +19,8 @@ abstract class Money {
           newValue.toStringAsFixed(2); //TODO: remove mock
       //TODO: implement currency format method
 
-      _rawValue = newValue;
-      _formattedValue = _parsedValue;
+      _rawValue.value = newValue;
+      _formattedValue.value = _parsedValue;
     } catch (e) {
       throw e;
     }
