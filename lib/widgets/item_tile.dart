@@ -142,11 +142,12 @@ class ItemTile extends StatelessWidget {
         ? Row(
             children: [
               VerticalDivider(width: 2),
-              ItemButton(
-                color: Colors.lightBlueAccent,
-                iconColor: item.pinned ? Colors.black87 : Colors.white,
-                icon: Icons.location_pin,
-                onPress: () => fixBill(),
+              Obx(
+                () => ItemButton(
+                    color: Colors.lightBlueAccent,
+                    iconColor: item.pinned ? Colors.black87 : Colors.white,
+                    icon: Icons.location_pin,
+                    onPress: () => fixBill()),
               ),
               VerticalDivider(width: 2),
             ],
@@ -185,7 +186,7 @@ class ItemTile extends StatelessWidget {
     });
   }
 
-  void fixBill() => item.pin = !item.pinned;
+  void fixBill() async => await item.updatePin(!item.pinned);
 
   void showDetails() {
     //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.

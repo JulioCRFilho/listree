@@ -8,14 +8,17 @@ class MonthlyBill extends RxController
     implements MonthlyBillInterface {
   MonthlyBill();
 
-  factory MonthlyBill.fromMap(Map<String, dynamic> _map) => MonthlyBill()
-    ..id = _map['id']
-    ..title = _map['title']
-    ..description = _map['description']
-    ..dateTime = DateTime.parse(_map['dateTime'])
-    ..repeatCount = _map['repeatCount'] ?? 0
-    ..value = double.tryParse(_map['value'].toString()) ?? 0
-    ..pin = _map['pinned'] == 1;
+  factory MonthlyBill.fromMap(Map<String, dynamic> _map) {
+    return MonthlyBill()
+      ..id = _map['id']
+      ..title = _map['title']
+      ..description = _map['description']
+      ..dateTime = DateTime.parse(_map['dateTime'])
+      ..repeatCount = _map['repeatCount'] ?? 0
+      ..value = double.tryParse(_map['value'].toString()) ?? 0
+      ..pin = _map['pinned'] == 1
+      ..showPin = _map['showPin'] ?? false;
+  }
 
   static List<MonthlyBill> fromList(List<dynamic> _list) {
     return _list.map((e) => MonthlyBill.fromMap(e)).toList();
@@ -56,5 +59,18 @@ class MonthlyBill extends RxController
   Future<bool> delete() async {
     final MonthlyBillsDAO _dao = Get.find();
     return await _dao.delete(id);
+  }
+
+  Future<void> updatePin(bool _pin) async {
+    pin = _pin;
+
+    final MonthlyBillsDAO _dao = Get.find();
+    final _result = await _dao.updateItem(id, toMap);
+
+    if (_result) {
+      _dao.updateData(id: id);
+    } else {
+      pin = !_pin;
+    }
   }
 }

@@ -53,8 +53,16 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
     );
   }
 
-  Future<void> updateData() async {
-    final List? _result = await get();
+  Future<void> updateData({int? id}) async {
+    List<Map<String, dynamic>>? _result = await get();
+
+    if (id != null) {
+      _result = _result?.map((element) => {
+        ...element,
+        'showPin': element['id'] == id,
+      }).toList();
+    }
+
     _data.value = MonthlyBill.fromList(_result ?? []);
   }
 
@@ -82,7 +90,12 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
 
   @override
   Future<bool> updateItem(int _id, Map<String, dynamic> _obj) async {
-    final int _result = await db.update(_table, _obj);
+    final int _result = await db.update(
+      _table,
+      _obj,
+      where: '${ConfigDao.id} = ?',
+      whereArgs: [_id],
+    );
     return _result == 1;
   }
 
