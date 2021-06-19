@@ -56,7 +56,7 @@ class ItemTile extends StatelessWidget {
                 color: Colors.redAccent,
                 iconColor: Colors.white,
                 icon: Icons.delete,
-                onPress: () => deleteItem(),
+                onPress: () async => await _deleteItem(),
               ),
               VerticalDivider(width: 2),
             ],
@@ -143,8 +143,8 @@ class ItemTile extends StatelessWidget {
             children: [
               VerticalDivider(width: 2),
               ItemButton(
-                color: Colors.blue,
-                iconColor: item.pinned ? Colors.green : Colors.white,
+                color: Colors.lightBlueAccent,
+                iconColor: item.pinned ? Colors.black87 : Colors.white,
                 icon: Icons.location_pin,
                 onPress: () => fixBill(),
               ),
@@ -185,15 +185,15 @@ class ItemTile extends StatelessWidget {
     });
   }
 
-  void fixBill() {
-    //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
-  }
+  void fixBill() => item.pin = !item.pinned;
 
   void showDetails() {
     //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
   }
 
-  void deleteItem() {
-    //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
+  Future<void> _deleteItem() async {
+    final bool _deleted = await item.delete();
+    await _confirmDismiss(dismiss: _deleted);
+    await Get.find<MonthlyBillsDAO>().updateData();
   }
 }

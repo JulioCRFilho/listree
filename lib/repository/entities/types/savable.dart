@@ -4,13 +4,15 @@ abstract class Savable {
   late final int id;
 
   RxString _title = ''.obs;
-  RxString? description = ''.obs;
+  RxString? _description = ''.obs;
   RxBool _pinned = false.obs;
 
   /// Getters
   String get title => _title.value;
 
   bool get pinned => _pinned.value;
+
+  String? get description => _description?.value;
 
   /// Setters
   set title(String newTitle) {
@@ -24,4 +26,6 @@ abstract class Savable {
   }
 
   set pin(bool _pin) => _pinned.value = _pin;
+
+  set description(String? _newValue) => _description?.value = _newValue ?? '';
 }

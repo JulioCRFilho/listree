@@ -36,7 +36,7 @@ abstract class ConfigDao {
 
   Future<bool> insert(Map<String, dynamic> _obj);
 
-  Future<bool> updateData(int _id, Map<String, dynamic> _obj);
+  Future<bool> updateItem(int _id, Map<String, dynamic> _obj);
 
   Future<bool> delete(int _id);
 

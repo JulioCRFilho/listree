@@ -37,9 +37,11 @@ class ListItems extends StatelessWidget {
                 ),
               ),
               Flexible(
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (ctx, i) => ItemTile(items[i]),
+                child: Obx(
+                  () => ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (ctx, i) => ItemTile(items[i]),
+                  ),
                 ),
               ),
             ],

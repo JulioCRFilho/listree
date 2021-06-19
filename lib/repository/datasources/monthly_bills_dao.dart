@@ -53,6 +53,11 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
     );
   }
 
+  Future<void> updateData() async {
+    final List? _result = await get();
+    _data.value = MonthlyBill.fromList(_result ?? []);
+  }
+
   @override
   Future<bool> delete(int _id) async {
     final int _deleted = await _db
@@ -76,7 +81,7 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
   }
 
   @override
-  Future<bool> updateData(int _id, Map<String, dynamic> _obj) async {
+  Future<bool> updateItem(int _id, Map<String, dynamic> _obj) async {
     final int _result = await db.update(_table, _obj);
     return _result == 1;
   }
