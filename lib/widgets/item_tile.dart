@@ -4,6 +4,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:listree/repository/datasources/monthly_bills_dao.dart';
 import 'package:listree/repository/entities/models/models.dart';
 import 'package:listree/widgets/item_button.dart';
+import 'package:listree/widgets/item_view.dart';
 
 class ItemTile extends StatelessWidget {
   final MonthlyBill item;
@@ -49,7 +50,7 @@ class ItemTile extends StatelessWidget {
                 color: Colors.redAccent,
                 iconColor: Colors.white,
                 icon: Icons.list_alt,
-                onPress: () => showDetails(),
+                onPress: () => ItemView(item).show(),
               ),
               VerticalDivider(width: 2),
               ItemButton(
@@ -187,10 +188,6 @@ class ItemTile extends StatelessWidget {
   }
 
   void fixBill() async => await item.updatePin(!item.pinned);
-
-  void showDetails() {
-    //TODO: implement correct method and call _confirmDismiss(dismiss: true) after that.
-  }
 
   Future<void> _deleteItem() async {
     final bool _deleted = await item.delete();

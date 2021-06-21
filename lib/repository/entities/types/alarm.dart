@@ -7,6 +7,12 @@ abstract class Alarm {
   /// Getters
   DateTime get dateTime => _dateTime.value;
 
+  String get dateTimeFormatted => [
+        dateTime.day,
+        dateTime.month,
+        dateTime.year,
+      ].join('/');
+
   int get repeatCount => _repeatCount.value;
 
   ///Setters
