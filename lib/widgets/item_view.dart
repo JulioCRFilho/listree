@@ -44,7 +44,9 @@ class ItemView {
               _editing.value
                   ? IconButton(
                       icon: Icon(Icons.done),
-                      onPressed: () {},
+                      onPressed: () {
+                        //TODO: implement the updateItem method
+                      },
                     )
                   : Container(),
               IconButton(
