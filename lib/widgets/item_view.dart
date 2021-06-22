@@ -169,7 +169,7 @@ class ItemView {
     _bill
       ..title = _title.text
       ..description = _description.text
-      ..dateTime = DateTime.tryParse(_deadline.text) ?? _bill.dateTime
+      ..dateTime = _bill.dateTime //TODO: implement dateTime select
       ..lastUpdate = DateTime.now()
       ..value = value ?? _bill.rawValue
       ..repeatCount =
