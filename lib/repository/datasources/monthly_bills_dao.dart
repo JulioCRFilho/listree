@@ -28,6 +28,7 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
           'repeatCount': 2 * i,
           'value': 7.20 * i,
           'pinned': i % 3 == 0,
+          'lastUpdate': DateTime.now().toIso8601String(),
         });
       }
 
@@ -48,8 +49,9 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
         'repeatCount integer not null',
         'value integer not null',
         'pinned integer not null',
+        'lastUpdate text not null',
       ],
-      version: 3,
+      version: 4,
     );
   }
 
@@ -57,10 +59,9 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
     List<Map<String, dynamic>>? _result = await get();
 
     if (id != null) {
-      _result = _result?.map((element) => {
-        ...element,
-        'showPin': element['id'] == id,
-      }).toList();
+      _result = _result
+          ?.map((element) => {...element, 'showPin': element['id'] == id})
+          .toList();
     }
 
     _data.value = MonthlyBill.fromList(_result ?? []);

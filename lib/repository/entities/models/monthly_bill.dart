@@ -17,7 +17,8 @@ class MonthlyBill extends RxController
       ..repeatCount = _map['repeatCount'] ?? 0
       ..value = double.tryParse(_map['value'].toString()) ?? 0
       ..pin = _map['pinned'] == 1
-      ..showPin = _map['showPin'] ?? false;
+      ..showPin = _map['showPin'] ?? false
+      ..lastUpdate = DateTime.parse(_map['lastUpdate']);
   }
 
   static List<MonthlyBill> fromList(List<dynamic> _list) {
@@ -33,6 +34,7 @@ class MonthlyBill extends RxController
       'repeatCount': repeatCount,
       'value': rawValue,
       'pinned': pinned ? 1 : 0,
+      'lastUpdate': lastUpdate.toIso8601String(),
     };
   }
 
