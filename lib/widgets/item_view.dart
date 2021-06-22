@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:listree/repository/entities/models/models.dart';
 
 class ItemView {
-  final MonthlyBill _bill;
   RxBool _editing = false.obs;
+
+  final MonthlyBill _bill;
+  final bool _creating;
 
   final TextEditingController _title = TextEditingController();
   final TextEditingController _description = TextEditingController();
@@ -15,7 +17,7 @@ class ItemView {
   final TextEditingController _parcels = TextEditingController();
   final TextEditingController _lastUpdate = TextEditingController();
 
-  ItemView(this._bill);
+  ItemView(this._bill, [this._creating = false]);
 
   void show() {
     _title.text = _bill.title;
@@ -61,15 +63,22 @@ class ItemView {
           () => Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _editing.value
+              _editing.value || _creating
                   ? IconButton(
                       icon: Icon(Icons.done),
-                      onPressed: () => _updateItem(),
+                      onPressed: () => _updateOrCreateItem(),
                     )
                   : Container(),
               IconButton(
-                icon: Icon(_editing.value ? Icons.close : Icons.edit),
-                onPressed: () => _editing.value = !_editing.value,
+                icon: Icon(
+                    _editing.value || _creating ? Icons.close : Icons.edit),
+                onPressed: () {
+                  if (_creating) {
+                    Get.close(1);
+                  } else {
+                    _editing.value = !_editing.value;
+                  }
+                },
               ),
             ],
           ),
@@ -78,7 +87,7 @@ class ItemView {
           () => Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _editing.value
+              _editing.value || _creating
                   ? Flexible(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -118,7 +127,7 @@ class ItemView {
           ),
           Obx(
             () => Flexible(
-              child: _editing.value && editable
+              child: _editing.value && editable || _creating && editable
                   ? _editable(_controller)
                   : Text(_controller.text),
             ),
@@ -153,20 +162,24 @@ class ItemView {
     );
   }
 
-  Future<void> _updateItem() async {
+  Future<void> _updateOrCreateItem() async {
+    final value =
+        double.tryParse(_value.text.substring(3).replaceAll(',', '.'));
+
     _bill
       ..title = _title.text
       ..description = _description.text
-      ..value = double.tryParse(_value.text) ?? _bill.rawValue
       ..dateTime = DateTime.tryParse(_deadline.text) ?? _bill.dateTime
       ..lastUpdate = DateTime.now()
+      ..value = value ?? _bill.rawValue
       ..repeatCount =
           int.tryParse(_parcels.text.replaceAll(RegExp('[^0-9]'), '')) ??
               _bill.repeatCount;
 
-    final bool _updated = await _bill.update();
+    final bool _success =
+        _creating ? await _bill.create() : await _bill.update();
 
-    if (_updated) {
+    if (_success) {
       _editing.value = false;
       Get.close(1);
     }

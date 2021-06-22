@@ -14,15 +14,9 @@ abstract class Money {
 
   /// Setters
   set value(double newValue) {
-    try {
-      final String _parsedValue =
-          newValue.toStringAsFixed(2); //TODO: remove mock
-      //TODO: implement currency format method
+    //TODO: implement currency format method
 
-      _rawValue.value = newValue;
-      _formattedValue.value = _parsedValue;
-    } catch (e) {
-      throw e;
-    }
+    _rawValue.value = newValue;
+    _formattedValue.value = 'R\$ $newValue';
   }
 }

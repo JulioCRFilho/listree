@@ -27,14 +27,14 @@ class MonthlyBill extends RxController
 
   Map<String, dynamic> get toMap {
     return {
-      'id': id,
       'title': title,
       'description': description,
       'dateTime': dateTime.toIso8601String(),
       'repeatCount': repeatCount,
-      'value': rawValue,
       'pinned': pinned ? 1 : 0,
       'lastUpdate': lastUpdate.toIso8601String(),
+      'value':
+          (int.tryParse(rawValue.toString().replaceAll('.', '')) ?? 0) / 100,
     };
   }
 

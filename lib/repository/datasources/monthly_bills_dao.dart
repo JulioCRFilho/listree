@@ -85,7 +85,11 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
 
   @override
   Future<bool> insert(Map<String, dynamic> _obj) async {
-    final int _result = await db.insert(_table, _obj);
+    final int _result = await db.insert(
+      _table,
+      _obj,
+      conflictAlgorithm: ConflictAlgorithm.rollback,
+    );
     return _result == 1;
   }
 
