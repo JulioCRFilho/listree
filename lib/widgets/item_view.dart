@@ -12,10 +12,11 @@ class ItemView {
   final TextEditingController _title = TextEditingController();
   final TextEditingController _description = TextEditingController();
   final TextEditingController _value = TextEditingController();
-  final TextEditingController _deadline = TextEditingController();
   final TextEditingController _recurrent = TextEditingController();
   final TextEditingController _parcels = TextEditingController();
   final TextEditingController _lastUpdate = TextEditingController();
+
+  late Rx<DateTime> _selectedDateTime;
 
   ItemView(this._bill, [this._creating = false]);
 
@@ -23,10 +24,10 @@ class ItemView {
     _title.text = _bill.title;
     _description.text = _bill.description ?? '';
     _value.text = _bill.formattedValue;
-    _deadline.text = _bill.dateTimeFormatted;
     _recurrent.text = _bill.repeatCount != 0 ? 'Sim' : 'Não';
     _parcels.text = '${_bill.repeatCount} restantes';
     _lastUpdate.text = _bill.lastUpdateDate;
+    _selectedDateTime = _bill.dateTime.obs;
 
     Get.dialog(
       AlertDialog(
@@ -45,7 +46,12 @@ class ItemView {
         mainAxisSize: MainAxisSize.min,
         children: [
           _editableRow('Valor:', _value),
-          _editableRow('Vencimento:', _deadline),
+          Obx(() {
+            final DateTime d = _selectedDateTime.value;
+            final _dateTime = '${d.day}/${d.month}/${d.year}';
+
+            return _dateTimeRow('Vencimento:', _dateTime);
+          }),
           _editableRow('Recorrente:', _recurrent, editable: false),
           _editableRow('Parcelas:', _parcels),
           _editableRow('Descrição:', _description),
@@ -169,7 +175,7 @@ class ItemView {
     _bill
       ..title = _title.text
       ..description = _description.text
-      ..dateTime = _bill.dateTime //TODO: implement dateTime select
+      ..dateTime = _selectedDateTime.value
       ..lastUpdate = DateTime.now()
       ..value = value ?? _bill.rawValue
       ..repeatCount =
@@ -183,5 +189,57 @@ class ItemView {
       _editing.value = false;
       Get.close(1);
     }
+  }
+
+  Widget _dateTimeRow(String _label, String _dateTime) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(_label),
+          ),
+        ),
+        Expanded(
+          child: InkWell(
+            onTap: () =>
+                _editing.value || _creating ? _showDateTimePicker() : null,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.rectangle,
+                border: _editing.value || _creating ? Border.all() : null,
+              ),
+              padding: const EdgeInsets.all(4),
+              child: Text(
+                _dateTime,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _showDateTimePicker() async {
+    final _context = Get.context;
+    if (_context == null) return;
+
+    final dateTime = await showDatePicker(
+      context: _context,
+      initialDate: _selectedDateTime.value,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2050),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+    );
+
+    if (dateTime != null) _selectedDateTime.value = dateTime;
   }
 }
