@@ -16,7 +16,7 @@ class ItemTile extends StatelessWidget {
     return Dismissible(
       key: Key(item.id.toString()),
       child: _item(),
-      background: Container(color: Colors.blue),
+      background: Container(color: Colors.cyan),
       secondaryBackground: Container(color: Colors.red),
       confirmDismiss: (direction) => _confirmDismiss(direction: direction),
     );
@@ -25,7 +25,7 @@ class ItemTile extends StatelessWidget {
   Widget _item() {
     return Obx(
       () {
-        final bool _showPin = item.showPin;
+        final bool _showPin = item.showPaid;
         final bool _showOptions = item.showOptions;
         final bool _shrunken = _showPin || _showOptions;
 
@@ -145,10 +145,11 @@ class ItemTile extends StatelessWidget {
               VerticalDivider(width: 2),
               Obx(
                 () => ItemButton(
-                    color: Colors.lightBlueAccent,
-                    iconColor: item.pinned ? Colors.black87 : Colors.white,
-                    icon: Icons.location_pin,
-                    onPress: () => fixBill()),
+                  color: Colors.cyan,
+                  iconColor: item.paid ? Colors.yellow : Colors.white,
+                  icon: Icons.paid,
+                  onPress: () => _setPaid(),
+                ),
               ),
               VerticalDivider(width: 2),
             ],
@@ -160,11 +161,11 @@ class ItemTile extends StatelessWidget {
     DismissDirection direction = DismissDirection.none,
     bool dismiss = false,
   }) async {
-    expandOthers();
+    _expandOthers();
 
     switch (direction) {
       case DismissDirection.startToEnd:
-        item.showPin = true;
+        item.showPaid = true;
         break;
       case DismissDirection.endToStart:
         item.showOptions = true;
@@ -176,7 +177,7 @@ class ItemTile extends StatelessWidget {
     return dismiss;
   }
 
-  void expandOthers() {
+  void _expandOthers() {
     final MonthlyBillsDAO _dao = Get.find();
     final List<MonthlyBill> _currentList = _dao.data;
 
@@ -187,7 +188,7 @@ class ItemTile extends StatelessWidget {
     });
   }
 
-  void fixBill() async => await item.updatePin(!item.pinned);
+  void _setPaid() async => await item.updatePaid(!item.paid);
 
   Future<void> _deleteItem() async {
     final bool _deleted = await item.delete();

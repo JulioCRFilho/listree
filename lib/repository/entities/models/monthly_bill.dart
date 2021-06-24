@@ -16,8 +16,8 @@ class MonthlyBill extends RxController
       ..dateTime = DateTime.parse(_map['dateTime'])
       ..repeatCount = _map['repeatCount'] ?? 0
       ..value = double.tryParse(_map['value'].toString()) ?? 0
-      ..pin = _map['pinned'] == 1
-      ..showPin = _map['showPin'] ?? false
+      ..pay = _map['pinned'] == 1
+      ..showPaid = _map['showPin'] ?? false
       ..lastUpdate = DateTime.parse(_map['lastUpdate']);
   }
 
@@ -31,7 +31,7 @@ class MonthlyBill extends RxController
       'description': description,
       'dateTime': dateTime.toIso8601String(),
       'repeatCount': repeatCount,
-      'pinned': pinned ? 1 : 0,
+      'pinned': paid ? 1 : 0,
       'lastUpdate': lastUpdate.toIso8601String(),
       'value':
           (int.tryParse(rawValue.toString().replaceAll('.', '')) ?? 0) / 100,
@@ -63,8 +63,8 @@ class MonthlyBill extends RxController
     return await _dao.delete(id);
   }
 
-  Future<void> updatePin(bool _pin) async {
-    pin = _pin;
+  Future<void> updatePaid(bool _paid) async {
+    pay = _paid;
 
     final MonthlyBillsDAO _dao = Get.find();
     final _result = await _dao.updateItem(id, toMap);
@@ -72,7 +72,7 @@ class MonthlyBill extends RxController
     if (_result) {
       _dao.updateData(id: id);
     } else {
-      pin = !_pin;
+      pay = !_paid;
     }
   }
 }

@@ -77,7 +77,8 @@ class ItemView {
                   : Container(),
               IconButton(
                 icon: Icon(
-                    _editing.value || _creating ? Icons.close : Icons.edit),
+                  _editing.value || _creating ? Icons.close : Icons.edit,
+                ),
                 onPressed: () {
                   if (_creating) {
                     Get.close(1);
