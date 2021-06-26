@@ -27,7 +27,7 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
           'dateTime': DateTime.now().toIso8601String(),
           'repeatCount': 2 * i,
           'value': 7.20 * i,
-          'pinned': i % 3 == 0,
+          'paid': i % 3 == 0 ? 1 : 0,
           'lastUpdate': DateTime.now().toIso8601String(),
         });
       }
@@ -48,10 +48,10 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
         'dateLimit text',
         'repeatCount integer not null',
         'value integer not null',
-        'pinned integer not null',
+        'paid integer not null',
         'lastUpdate text not null',
       ],
-      version: 4,
+      version: 5,
     );
   }
 
@@ -60,7 +60,7 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
 
     if (id != null) {
       _result = _result
-          ?.map((element) => {...element, 'showPin': element['id'] == id})
+          ?.map((element) => {...element, 'showPaid': element['id'] == id})
           .toList();
     }
 

@@ -16,8 +16,8 @@ class MonthlyBill extends RxController
       ..dateTime = DateTime.parse(_map['dateTime'])
       ..repeatCount = _map['repeatCount'] ?? 0
       ..value = double.tryParse(_map['value'].toString()) ?? 0
-      ..pay = _map['pinned'] == 1
-      ..showPaid = _map['showPin'] ?? false
+      ..pay = _map['paid'] == 1
+      ..showPaid = _map['showPaid'] ?? false
       ..lastUpdate = DateTime.parse(_map['lastUpdate']);
   }
 
@@ -31,7 +31,7 @@ class MonthlyBill extends RxController
       'description': description,
       'dateTime': dateTime.toIso8601String(),
       'repeatCount': repeatCount,
-      'pinned': paid ? 1 : 0,
+      'paid': paid ? 1 : 0,
       'lastUpdate': lastUpdate.toIso8601String(),
       'value':
           (int.tryParse(rawValue.toString().replaceAll('.', '')) ?? 0) / 100,

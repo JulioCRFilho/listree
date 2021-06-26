@@ -25,13 +25,13 @@ class ItemTile extends StatelessWidget {
   Widget _item() {
     return Obx(
       () {
-        final bool _showPin = item.showPaid;
+        final bool _showPaid = item.showPaid;
         final bool _showOptions = item.showOptions;
-        final bool _shrunken = _showPin || _showOptions;
+        final bool _shrunken = _showPaid || _showOptions;
 
         return Row(
           children: [
-            _pin(_showPin),
+            _paid(_showPaid),
             _body(_shrunken),
             _options(_showOptions),
           ],
@@ -138,8 +138,8 @@ class ItemTile extends StatelessWidget {
     );
   }
 
-  Widget _pin(bool _showPin) {
-    return _showPin
+  Widget _paid(bool _showPaid) {
+    return _showPaid
         ? Row(
             children: [
               VerticalDivider(width: 2),
