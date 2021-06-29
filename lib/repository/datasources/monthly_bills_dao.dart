@@ -27,7 +27,7 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
           'dateTime': DateTime.now().toIso8601String(),
           'repeatCount': 2 * i,
           'value': 7.20 * i,
-          'pinned': i % 3 == 0,
+          'paid': i % 3 == 0,
           'lastUpdate': DateTime.now().toIso8601String(),
         });
       }
@@ -48,31 +48,39 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
         'dateLimit text',
         'repeatCount integer not null',
         'value integer not null',
-        'pinned integer not null',
+        'paid integer not null',
         'lastUpdate text not null',
       ],
       version: 4,
     );
   }
 
-  Future<void> updateData({int? id}) async {
+  Future<void> updatePaid(int _id) async {
     List<Map<String, dynamic>>? _result = await get();
 
-    if (id != null) {
-      _result = _result
-          ?.map((element) => {...element, 'showPin': element['id'] == id})
-          .toList();
-    }
+    _result = _result
+        ?.map((element) => {...element, 'showPaid': element['id'] == _id})
+        .toList();
 
     _data.value = MonthlyBill.fromList(_result ?? []);
   }
 
+  Future<void> updateData() async {
+    List<Map<String, dynamic>>? _result = await get();
+    _data.value = MonthlyBill.fromList(_result ?? []);
+  }
+
   @override
-  Future<bool> delete(int _id) async {
+  Future<bool> delete(int _id, {bool refreshData = true}) async {
     final int _deleted = await _db
         .delete(_table, where: '${ConfigDao.id} = ?', whereArgs: [_id]);
 
-    return _deleted == 1;
+    if (_deleted == 1) {
+      if (refreshData) await updateData();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -84,24 +92,36 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
       );
 
   @override
-  Future<bool> insert(Map<String, dynamic> _obj) async {
+  Future<bool> insert(Map<String, dynamic> _obj, {bool refreshData = true}) async {
     final int _result = await db.insert(
       _table,
       _obj,
       conflictAlgorithm: ConflictAlgorithm.rollback,
     );
-    return _result == 1;
+
+    if (_result == 1) {
+      if (refreshData) await updateData();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
-  Future<bool> updateItem(int _id, Map<String, dynamic> _obj) async {
+  Future<bool> updateItem(int _id, Map<String, dynamic> _obj, {bool refreshData = true}) async {
     final int _result = await db.update(
       _table,
       _obj,
       where: '${ConfigDao.id} = ?',
       whereArgs: [_id],
     );
-    return _result == 1;
+
+    if (_result == 1) {
+      if (refreshData) await updateData();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override

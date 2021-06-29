@@ -16,8 +16,8 @@ class MonthlyBill extends RxController
       ..dateTime = DateTime.parse(_map['dateTime'])
       ..repeatCount = _map['repeatCount'] ?? 0
       ..value = double.tryParse(_map['value'].toString()) ?? 0
-      ..pay = _map['pinned'] == 1
-      ..showPaid = _map['showPin'] ?? false
+      ..pay = _map['paid'] == 1
+      ..showPaid = _map['showPaid'] ?? false
       ..lastUpdate = DateTime.parse(_map['lastUpdate']);
   }
 
@@ -31,7 +31,7 @@ class MonthlyBill extends RxController
       'description': description,
       'dateTime': dateTime.toIso8601String(),
       'repeatCount': repeatCount,
-      'pinned': paid ? 1 : 0,
+      'paid': paid ? 1 : 0,
       'lastUpdate': lastUpdate.toIso8601String(),
       'value':
           (int.tryParse(rawValue.toString().replaceAll('.', '')) ?? 0) / 100,
@@ -46,31 +46,31 @@ class MonthlyBill extends RxController
   }
 
   @override
-  Future<bool> create() async {
+  Future<bool> create({bool refreshData = true}) async {
     final MonthlyBillsDAO _dao = Get.find();
-    return await _dao.insert(toMap);
+    return await _dao.insert(toMap, refreshData: refreshData);
   }
 
   @override
-  Future<bool> update() async {
+  Future<bool> update({bool refreshData = true}) async {
     final MonthlyBillsDAO _dao = Get.find();
-    return await _dao.updateItem(id, toMap);
+    return await _dao.updateItem(id, toMap, refreshData: refreshData);
   }
 
   @override
-  Future<bool> delete() async {
+  Future<bool> delete({bool refreshData = true}) async {
     final MonthlyBillsDAO _dao = Get.find();
-    return await _dao.delete(id);
+    return await _dao.delete(id, refreshData: refreshData);
   }
 
-  Future<void> updatePaid(bool _paid) async {
+  Future<void> updatePaid(bool _paid, {bool refreshData = true}) async {
     pay = _paid;
 
     final MonthlyBillsDAO _dao = Get.find();
-    final _result = await _dao.updateItem(id, toMap);
+    final _result = await _dao.updateItem(id, toMap, refreshData: refreshData);
 
     if (_result) {
-      _dao.updateData(id: id);
+      _dao.updatePaid(id);
     } else {
       pay = !_paid;
     }

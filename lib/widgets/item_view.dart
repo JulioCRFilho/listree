@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:listree/repository/datasources/monthly_bills_dao.dart';
 import 'package:listree/repository/entities/models/models.dart';
 
 class ItemView {
@@ -183,12 +184,22 @@ class ItemView {
           int.tryParse(_parcels.text.replaceAll(RegExp('[^0-9]'), '')) ??
               _bill.repeatCount;
 
-    final bool _success =
-        _creating ? await _bill.create() : await _bill.update();
+    _creating ? await _bill.create() : await _bill.update();
 
-    if (_success) {
+    final MonthlyBillsDAO _dao = Get.find();
+    final int _updatedList = _dao.data.length;
+
+    if (_updatedList > 0) {
       _editing.value = false;
+      await _dao.updateData();
       Get.close(1);
+    } else {
+      Get.showSnackbar(
+        GetBar(
+          title: 'Falha ao criar sua despesa.',
+          message: 'Verifique as informações e tente novamente.',
+        ),
+      );
     }
   }
 
