@@ -9,7 +9,7 @@ class ListItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return items.length > 0
+    return Obx(() => items.length > 0
         ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -59,6 +59,6 @@ class ListItems extends StatelessWidget {
                 ),
               ],
             ),
-          );
+          ));
   }
 }

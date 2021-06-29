@@ -18,23 +18,6 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
   Future<MonthlyBillsDAO> call() async {
     _db = await _getDatabase();
     _data.value = MonthlyBill.fromList(await get() ?? []);
-
-    //TODO: remove mock
-    if (data.length == 0) {
-      for (var i in Iterable.generate(9)) {
-        db.insert(_table, <String, Object?>{
-          'title': 'mock mesmo $i',
-          'dateTime': DateTime.now().toIso8601String(),
-          'repeatCount': 2 * i,
-          'value': 7.20 * i,
-          'paid': i % 3 == 0,
-          'lastUpdate': DateTime.now().toIso8601String(),
-        });
-      }
-
-      _data.value = MonthlyBill.fromList(await get() ?? []);
-    }
-
     return this;
   }
 
@@ -51,7 +34,7 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
         'paid integer not null',
         'lastUpdate text not null',
       ],
-      version: 4,
+      version: 5,
     );
   }
 
@@ -92,7 +75,8 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
       );
 
   @override
-  Future<bool> insert(Map<String, dynamic> _obj, {bool refreshData = true}) async {
+  Future<bool> insert(Map<String, dynamic> _obj,
+      {bool refreshData = true}) async {
     final int _result = await db.insert(
       _table,
       _obj,
@@ -108,7 +92,8 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
   }
 
   @override
-  Future<bool> updateItem(int _id, Map<String, dynamic> _obj, {bool refreshData = true}) async {
+  Future<bool> updateItem(int _id, Map<String, dynamic> _obj,
+      {bool refreshData = true}) async {
     final int _result = await db.update(
       _table,
       _obj,

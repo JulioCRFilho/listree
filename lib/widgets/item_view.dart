@@ -187,11 +187,12 @@ class ItemView {
     _creating ? await _bill.create() : await _bill.update();
 
     final MonthlyBillsDAO _dao = Get.find();
+    await _dao.updateData();
+
     final int _updatedList = _dao.data.length;
 
     if (_updatedList > 0) {
       _editing.value = false;
-      await _dao.updateData();
       Get.close(1);
     } else {
       Get.showSnackbar(
