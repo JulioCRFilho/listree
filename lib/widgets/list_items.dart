@@ -13,52 +13,64 @@ class ListItems extends StatelessWidget {
         ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                color: Colors.blueGrey,
-                height: 40,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Expanded(child: const Text('Título')),
-                      Container(
-                        width: 80,
-                        alignment: Alignment.centerRight,
-                        child: const Text('Data'),
-                      ),
-                      Container(
-                        width: 100,
-                        alignment: Alignment.centerRight,
-                        child: const Text('Valor'),
-                      ),
-                    ],
-                  ),
+              _header(),
+              _bodyList(),
+            ],
+          )
+        : _emptyList());
+  }
+
+  Flexible _bodyList() {
+    return Flexible(
+              child: Obx(
+                () => ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (ctx, i) => ItemTile(items[i]),
                 ),
               ),
-              Flexible(
-                child: Obx(
-                  () => ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (ctx, i) => ItemTile(items[i]),
-                  ),
+            );
+  }
+
+  Padding _emptyList() {
+    return Padding(
+          padding: const EdgeInsets.only(top: 24, left: 8, right: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Nenhum item salvo nessa lista ainda.',
+                style: const TextStyle(
+                  fontSize: 18,
                 ),
               ),
             ],
-          )
-        : Padding(
-            padding: const EdgeInsets.only(top: 24, left: 8, right: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Nenhum item salvo nessa lista ainda.',
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+          ),
+        );
+  }
+
+  Container _header() {
+    return Container(
+      color: Colors.blueGrey,
+      height: 40,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Expanded(child: const Text('Título')),
+            Container(
+              width: 80,
+              alignment: Alignment.centerRight,
+              child: const Text('Data'),
             ),
-          ));
+            Container(
+              width: 100,
+              alignment: Alignment.centerRight,
+              child: const Text('Valor'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

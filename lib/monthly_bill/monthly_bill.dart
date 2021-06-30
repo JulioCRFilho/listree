@@ -9,14 +9,14 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Constants.appName),
+        title: const Text(Constants.appName),
         centerTitle: true,
         backgroundColor: Colors.black54,
       ),
       body: ListItems(super.dao.data),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.grey,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () => super.createItem(),
       ),
     );
