@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listree/repository/datasources/monthly_bills_dao.dart';
-import 'package:listree/repository/entities/models/models.dart';
+import 'package:listree/repository/usecases/export.dart';
 
 class ItemView {
   RxBool _editing = false.obs;

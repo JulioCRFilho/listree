@@ -1,4 +1,4 @@
-import 'package:listree/repository/entities/models/models.dart';
+import 'package:listree/repository/usecases/export.dart';
 
 abstract class MonthlyBillInterface {
   Future<bool> create();

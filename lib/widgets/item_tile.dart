@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:listree/repository/datasources/monthly_bills_dao.dart';
-import 'package:listree/repository/entities/models/models.dart';
+import 'package:listree/repository/usecases/export.dart';
 import 'package:listree/widgets/item_button.dart';
 import 'package:listree/widgets/item_view.dart';
 
@@ -38,7 +38,7 @@ class ItemTile extends StatelessWidget {
         );
       },
     );
-  }
+      }
 
   Widget _options(bool _showOptions) {
     return _showOptions

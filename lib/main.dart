@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:listree/home/home.dart';
+import 'package:listree/config/constants.dart';
+import 'package:listree/monthly_bill/monthly_bill.dart';
 import 'package:listree/repository/datasources/monthly_bills_dao.dart';
 
 void main() async {
@@ -16,8 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Listree',
-      home: Home(),
+      title: Constants.appName,
+      home: MonthlyBill(),
     );
   }
 }
