@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listree/config/constants.dart';
+import 'package:listree/config/local_notifications/local_notifications.dart';
 import 'package:listree/monthly_bill/monthly_bill.dart';
 import 'package:listree/repository/datasources/monthly_bills_dao.dart';
 
@@ -8,6 +9,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Get.put(await MonthlyBillsDAO()());
+
+  final bool _initialized = await LocalNotifications()();
+  print('Local notifications inicializado: $_initialized');
 
   runApp(MyApp());
 }

@@ -1,37 +1,48 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotifications {
-  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  Future<bool> call() async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
 
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-  static const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
-  //TODO: implement the drawable 'app_icon'
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/app_icon');
+    //TODO: implement different icons for different list types
 
-  static IOSInitializationSettings initializationSettingsIOS =
-      IOSInitializationSettings(onDidReceiveLocalNotification: (a, b, c, d) {
-    //TODO: implement onReceiveLocalNotification
-    return Future.value();
-  });
+    IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(
+            onDidReceiveLocalNotification: iosReceivedLocalNotification);
 
-  static MacOSInitializationSettings initializationSettingsMacOS =
-      MacOSInitializationSettings();
+    const MacOSInitializationSettings initializationSettingsMacOS =
+        MacOSInitializationSettings();
 
-  static InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-      macOS: initializationSettingsMacOS);
+    InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+        macOS: initializationSettingsMacOS);
 
-  static Future<bool> call() async {
     final bool? _initialized = await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: (_) {
-        //TODO: implement onSelectNotification
-        return Future.value();
-      },
+      onSelectNotification: selectNotification,
     );
 
     return _initialized ?? false;
+  }
+
+  Future selectNotification(String? payload) {
+    print('notificação selecionada $payload');
+    return Future.value(payload);
+  }
+
+  Future iosReceivedLocalNotification(
+    int id,
+    String? title,
+    String? body,
+    String? payload,
+  ) async {
+    //TODO: implement onReceiveLocalNotification
+    print('ios recebeu notificação local $id, $title, $body, $payload');
+    return Future.value();
   }
 }
