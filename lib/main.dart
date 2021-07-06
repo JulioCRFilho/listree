@@ -9,9 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Get.put(await MonthlyBillsDAO()());
-
-  final bool _initialized = await LocalNotifications()();
-  print('Local notifications inicializado: $_initialized');
+  Get.put(await LocalNotifications()());
 
   runApp(MyApp());
 }
