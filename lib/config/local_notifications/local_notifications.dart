@@ -21,7 +21,8 @@ class LocalNotifications with MLocalNotifications {
   Future<LocalNotifications> call() async {
     try {
       super.plugin = FlutterLocalNotificationsPlugin();
-      final _initialized = await super.plugin.initialize(
+
+      await super.plugin.initialize(
             _initializationSettings,
             onSelectNotification: _selectNotification,
           );

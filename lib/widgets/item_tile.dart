@@ -188,7 +188,7 @@ class ItemTile extends StatelessWidget {
     });
   }
 
-  void _setPaid() async => await item.updatePaid(!item.paid);
+  void _setPaid() async => await item.updatePaid(!item.paid, refreshData: false);
 
   Future<void> _deleteItem() async {
     final bool _deleted = await item.delete();

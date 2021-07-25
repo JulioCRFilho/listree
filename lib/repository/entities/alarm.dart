@@ -2,9 +2,9 @@ import 'package:get/get.dart';
 import 'package:listree/config/local_notifications/local_notifications.dart';
 
 abstract class Alarm {
-  Rx<DateTime> _dateTime = DateTime.now().obs;
+  Rx<DateTime> _dateTime = newDateTime().obs;
+
   RxInt _repeatCount = 0.obs;
-  Rx<Duration> _repeatEvery = Duration().obs;
 
   DateTime get dateTime => _dateTime.value;
 
@@ -22,11 +22,19 @@ abstract class Alarm {
     _repeatCount.value = value;
   }
 
-  Future<bool> setAlarm() {
-    //TODO: implement specific alarm setter
-    return Future.value();
-  }
-
   Future<void> cancelAlarm(int _id) async =>
       await Get.find<LocalNotifications>().cancelAlarmById(_id);
+
+  static DateTime newDateTime() {
+    final DateTime _currentDateTime = DateTime.now();
+    final DateTime _zeroHourDateTime = _currentDateTime.subtract(
+      Duration(
+        hours: _currentDateTime.hour,
+        minutes: _currentDateTime.minute,
+        seconds: _currentDateTime.second,
+      ),
+    );
+
+    return _zeroHourDateTime.add(Duration(hours: 8));
+  }
 }

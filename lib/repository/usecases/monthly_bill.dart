@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
+import 'package:listree/config/local_notifications/local_notifications.dart';
+import 'package:listree/repository/datasources/interfaces/monthly_bill_interface.dart';
 import 'package:listree/repository/datasources/monthly_bills_dao.dart';
 import 'package:listree/repository/entities/export.dart';
-import 'package:listree/repository/datasources/interfaces/monthly_bill_interface.dart';
 
 class MonthlyBill extends RxController
     with Alarm, Money, Savable, Drag
@@ -48,19 +49,42 @@ class MonthlyBill extends RxController
   @override
   Future<bool> create({bool refreshData = true}) async {
     final MonthlyBillsDAO _dao = Get.find();
-    return await _dao.insert(toMap, refreshData: refreshData);
+    final bool _inserted = await _dao.insert(toMap, refreshData: refreshData);
+
+    if (_inserted) {
+      final LocalNotifications _notificationPlugin = Get.find();
+      _notificationPlugin.scheduleNewNotification(this);
+    }
+
+    return _inserted;
   }
 
   @override
   Future<bool> update({bool refreshData = true}) async {
     final MonthlyBillsDAO _dao = Get.find();
-    return await _dao.updateItem(id, toMap, refreshData: refreshData);
+    final bool _updated =
+        await _dao.updateItem(id, toMap, refreshData: refreshData);
+
+    if (_updated) {
+      final LocalNotifications _notificationPlugin = Get.find();
+      await _notificationPlugin.cancelAlarmById(id);
+      await _notificationPlugin.scheduleNewNotification(this);
+    }
+
+    return _updated;
   }
 
   @override
   Future<bool> delete({bool refreshData = true}) async {
     final MonthlyBillsDAO _dao = Get.find();
-    return await _dao.delete(id, refreshData: refreshData);
+    final bool _deleted = await _dao.delete(id, refreshData: refreshData);
+
+    if (_deleted) {
+      final LocalNotifications _notificationPlugin = Get.find();
+      _notificationPlugin.cancelAlarmById(id);
+    }
+
+    return _deleted;
   }
 
   Future<void> updatePaid(bool _paid, {bool refreshData = true}) async {

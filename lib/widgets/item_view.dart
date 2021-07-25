@@ -21,7 +21,7 @@ class ItemView {
 
   ItemView(this._bill, [this._creating = false]);
 
-  void show() {
+  void show() async {
     _title.text = _bill.title;
     _description.text = _bill.description ?? '';
     _value.text = _bill.formattedValue;
@@ -253,6 +253,12 @@ class ItemView {
       initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
 
-    if (dateTime != null) _selectedDateTime.value = dateTime;
+    if (dateTime != null) {
+      final DateTime _eightHourDateTime = dateTime.add(
+        Duration(hours: 8),
+      );
+
+      _selectedDateTime.value = _eightHourDateTime;
+    }
   }
 }
