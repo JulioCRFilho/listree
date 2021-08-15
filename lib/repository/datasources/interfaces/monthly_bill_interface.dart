@@ -7,5 +7,7 @@ abstract class MonthlyBillInterface {
 
   Future<bool> update();
 
-  Future<List<MonthlyBill>> get();
+  Future<MonthlyBill> get();
+
+  Future<void> updatePaid(bool paid);
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
 import 'package:listree/repository/usecases/export.dart';
 import 'package:listree/widgets/date_time_picker.dart';
 
@@ -206,22 +205,23 @@ class BillViewer {
           int.tryParse(_parcels.text.replaceAll(RegExp('[^0-9]'), '')) ??
               _bill.repeatCount;
 
-    _creating ? await _bill.create() : await _bill.update();
+    final bool _success =
+        _creating ? await _bill.create() : await _bill.update();
 
-    final MonthlyBillsDAO _dao = Get.find();
-    await _dao.updateData();
-
-    final int _updatedList = _dao.data.length;
-
-    if (_updatedList > 0) {
+    if (_success) {
       _editing.value = false;
       Get.close(1);
     } else {
+      final String errorMsg = !_bill.dueDateValid
+          ? 'O vencimento deve ser posterior ao horário atual'
+          : 'Verifique as informações e tente novamente. '
+              'Se o problema persistir, contate o suporte.';
+
       Get.showSnackbar(
         GetBar(
           title: 'Falha ao inserir sua despesa.',
-          message: '''Verifique as informações e tente novamente. 
-              Se o problema persistir, contate o suporte.''',
+          message: errorMsg,
+          duration: Duration(seconds: 3),
         ),
       );
     }
@@ -247,7 +247,7 @@ class BillViewer {
 
         case DateTimeType.dateTime:
           _dateTime = '${d.hour}:${d.minute.toString().padLeft(2, '0')}'
-              ' ${d.subtract(Duration(days: 5)).day.toString().padLeft(2, '0')}'
+              ' ${d.day.toString().padLeft(2, '0')}'
               '/${d.month.toString().padLeft(2, '0')}';
           break;
       }
@@ -293,9 +293,8 @@ class BillViewer {
   }
 
   _selectNewDateTime(DateTime _current) async {
-    final DateTime _selected = await DateTimePicker.show(_current);
-    print('date time selecionado: $_selected');
-    _selectedDateTime.value = _selected;
+    final DateTime? _selected = await DateTimePicker.show(_current);
+    if (_selected != null) _selectedDateTime.value = _selected;
   }
 }
 

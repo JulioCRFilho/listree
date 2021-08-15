@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
@@ -8,7 +9,7 @@ import 'package:timezone/timezone.dart' as tz;
 mixin MLocalNotifications {
   late final FlutterLocalNotificationsPlugin plugin;
 
-  tz.Location get localTZ => tz.local;
+  tz.Location get _localTZ => tz.local;
 
   NotificationDetails _notificationDetails = const NotificationDetails(
     iOS: IOSNotificationDetails(),
@@ -20,8 +21,13 @@ mixin MLocalNotifications {
     ),
   );
 
+  @protected
+  void initTimeZones() => tz.initializeTimeZones();
+
+  @protected
   Future<void> cancelAlarms() async => await plugin.cancelAll();
 
+  @protected
   Future<void> validateAlarms() async {
     final MonthlyBillsDAO _dao = Get.find();
 
@@ -37,6 +43,8 @@ mixin MLocalNotifications {
         if (!_idFound || _currentNotifications.isEmpty) {
           final MonthlyBill _bill = _dao.data.singleWhere((e) => e.id == id);
 
+          if (!_bill.dueDate.isAfter(tz.TZDateTime.now(_localTZ))) return;
+
           await scheduleNewNotification(_bill);
         }
       });
@@ -47,14 +55,12 @@ mixin MLocalNotifications {
 
   Future<void> cancelAlarmById(int _id) async => await plugin.cancel(_id);
 
-  void initTimeZones() => tz.initializeTimeZones();
-
   Future<void> scheduleNewNotification(MonthlyBill _bill) async {
     await plugin.zonedSchedule(
       _bill.id,
       _bill.title,
       _bill.description,
-      tz.TZDateTime.from(_bill.dueDate, localTZ),
+      tz.TZDateTime.from(_bill.dueDate, _localTZ),
       _notificationDetails,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:

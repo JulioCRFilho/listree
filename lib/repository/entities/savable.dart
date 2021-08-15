@@ -14,8 +14,11 @@ abstract class Savable {
 
   DateTime get lastUpdate => _lastUpdate.value;
 
-  String get lastUpdateString =>
-      [lastUpdate.day, lastUpdate.month, lastUpdate.year].join('/');
+  String get lastUpdateString => [
+        lastUpdate.day,
+        lastUpdate.month.toString().padLeft(2, '0'),
+        lastUpdate.year,
+      ].join('/');
 
   DateTime get lastUpdateDate => _lastUpdate.value;
 

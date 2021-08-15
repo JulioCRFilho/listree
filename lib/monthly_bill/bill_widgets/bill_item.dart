@@ -9,7 +9,7 @@ import 'package:listree/widgets/collapsible_button.dart';
 class BillItem extends StatelessWidget {
   final MonthlyBill _monthlyBill;
 
-  BillItem(this._monthlyBill);
+  const BillItem(this._monthlyBill);
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +195,7 @@ class BillItem extends StatelessWidget {
   Future<void> _deleteItem() async {
     final bool _deleted = await _monthlyBill.delete();
     await _confirmDismiss(dismiss: _deleted);
+    //TODO: verify the below code line needing, since delete() updates the dao
     await Get.find<MonthlyBillsDAO>().updateData();
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:listree/settings/constants.dart';
-import 'package:listree/monthly_bill/monthly_bill_presenter.dart';
+import 'package:get/get.dart';
 import 'package:listree/monthly_bill/bill_widgets/bill_list.dart';
+import 'package:listree/monthly_bill/monthly_bill_presenter.dart';
+import 'package:listree/settings/constants.dart';
+import 'package:listree/settings/local_notifications/local_notifications.dart';
 
 class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
   @override
@@ -12,6 +14,20 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
         title: const Text(Constants.appName),
         centerTitle: true,
         backgroundColor: Colors.black54,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final pendingNotifications = await Get.find<LocalNotifications>()
+                  .plugin
+                  .pendingNotificationRequests();
+              pendingNotifications.forEach((element) {
+                print('${element.id}  ${element.title}');
+              });
+                print(pendingNotifications.length);
+            },
+            icon: Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: BillList(super.dao.data),
       floatingActionButton: FloatingActionButton(

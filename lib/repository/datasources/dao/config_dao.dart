@@ -30,11 +30,11 @@ abstract class ConfigDao {
     }
   }
 
-  Future<List<Map<String, Object?>>?> getById(int _id);
+  Future<Map<String, Object?>> getById(int _id);
 
   Future<List<Map<String, Object?>>?> get();
 
-  Future<bool> insert(Map<String, dynamic> _obj);
+  Future<int> insert(Map<String, dynamic> _obj);
 
   Future<bool> updateItem(int _id, Map<String, dynamic> _obj);
 

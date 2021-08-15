@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
-import 'package:listree/settings/local_notifications/local_notifications.dart';
-import 'package:listree/repository/datasources/interfaces/monthly_bill_interface.dart';
 import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
+import 'package:listree/repository/datasources/interfaces/monthly_bill_interface.dart';
 import 'package:listree/repository/entities/export.dart';
 
 class MonthlyBill extends RxController
@@ -40,35 +39,39 @@ class MonthlyBill extends RxController
   }
 
   @override
-  Future<List<MonthlyBill>> get() async {
+  Future<MonthlyBill> get() async {
     final MonthlyBillsDAO _dao = Get.find();
-    final List? _result = await _dao.get();
-    return MonthlyBill.fromList(_result ?? []);
+    final Map<String, dynamic> _result = await _dao.getById(id);
+    return MonthlyBill.fromMap(_result);
   }
 
   @override
   Future<bool> create({bool refreshData = true}) async {
-    final MonthlyBillsDAO _dao = Get.find();
-    final bool _inserted = await _dao.insert(toMap, refreshData: refreshData);
+    if (!dueDateValid) return false;
 
-    if (_inserted) {
-      final LocalNotifications _notificationPlugin = Get.find();
-      _notificationPlugin.scheduleNewNotification(this);
+    final MonthlyBillsDAO _dao = Get.find();
+    final int _insertedId = await _dao.insert(toMap, refreshData: refreshData);
+    final bool _success = _insertedId != 0;
+
+    if (_success) {
+      id = _insertedId;
+      super.registerAlarm(this);
     }
 
-    return _inserted;
+    return _success;
   }
 
   @override
   Future<bool> update({bool refreshData = true}) async {
+    if (!dueDateValid) return false;
+
     final MonthlyBillsDAO _dao = Get.find();
     final bool _updated =
         await _dao.updateItem(id, toMap, refreshData: refreshData);
 
     if (_updated) {
-      final LocalNotifications _notificationPlugin = Get.find();
-      await _notificationPlugin.cancelAlarmById(id);
-      await _notificationPlugin.scheduleNewNotification(this);
+      await super.cancelAlarm(id);
+      await super.registerAlarm(this);
     }
 
     return _updated;
@@ -79,21 +82,20 @@ class MonthlyBill extends RxController
     final MonthlyBillsDAO _dao = Get.find();
     final bool _deleted = await _dao.delete(id, refreshData: refreshData);
 
-    if (_deleted) {
-      final LocalNotifications _notificationPlugin = Get.find();
-      _notificationPlugin.cancelAlarmById(id);
-    }
+    if (_deleted) super.cancelAlarm(id);
 
     return _deleted;
   }
 
+  @override
   Future<void> updatePaid(bool _paid, {bool refreshData = true}) async {
     pay = _paid;
 
     final MonthlyBillsDAO _dao = Get.find();
-    final _result = await _dao.updateItem(id, toMap, refreshData: refreshData);
+    final bool _updated =
+        await _dao.updateItem(id, toMap, refreshData: refreshData);
 
-    if (_result) {
+    if (_updated) {
       _dao.updatePaid(id);
     } else {
       pay = !_paid;

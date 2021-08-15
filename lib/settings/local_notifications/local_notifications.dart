@@ -2,7 +2,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:listree/settings/local_notifications/m_local_notifications.dart';
 
 class LocalNotifications with MLocalNotifications {
-
   AndroidInitializationSettings _initializationSettingsAndroid =
       //TODO: implement different icons for different list types
       const AndroidInitializationSettings('@mipmap/app_icon');
