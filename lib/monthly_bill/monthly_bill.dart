@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:listree/config/constants.dart';
+import 'package:listree/settings/constants.dart';
 import 'package:listree/monthly_bill/monthly_bill_presenter.dart';
-import 'package:listree/widgets/list_items.dart';
+import 'package:listree/monthly_bill/bill_widgets/bill_list.dart';
 
 class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
   @override
@@ -13,7 +13,7 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
         centerTitle: true,
         backgroundColor: Colors.black54,
       ),
-      body: ListItems(super.dao.data),
+      body: BillList(super.dao.data),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.grey,
         child: const Icon(Icons.add),

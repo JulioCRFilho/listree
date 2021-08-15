@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:listree/repository/datasources/config_dao.dart';
+import 'package:listree/repository/datasources/dao/config_dao.dart';
 import 'package:listree/repository/usecases/export.dart';
 import 'package:sqflite/sqflite.dart';
 

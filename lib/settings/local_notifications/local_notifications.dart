@@ -1,7 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:listree/config/local_notifications/m_local_notifications.dart';
+import 'package:listree/settings/local_notifications/m_local_notifications.dart';
 
 class LocalNotifications with MLocalNotifications {
+
   AndroidInitializationSettings _initializationSettingsAndroid =
       //TODO: implement different icons for different list types
       const AndroidInitializationSettings('@mipmap/app_icon');
@@ -21,6 +22,8 @@ class LocalNotifications with MLocalNotifications {
   Future<LocalNotifications> call() async {
     try {
       super.plugin = FlutterLocalNotificationsPlugin();
+
+      super.initTimeZones();
 
       await super.plugin.initialize(
             _initializationSettings,

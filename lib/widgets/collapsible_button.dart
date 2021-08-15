@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ItemButton extends StatelessWidget {
+class CollapsibleButton extends StatelessWidget {
   final Color color, iconColor;
   final IconData icon;
   final void Function()? onPress;
 
-  const ItemButton({
+  const CollapsibleButton({
     required this.color,
     required this.iconColor,
     required this.icon,

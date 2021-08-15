@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:listree/repository/datasources/monthly_bills_dao.dart';
+import 'package:listree/monthly_bill/bill_widgets/bill_viewer.dart';
+import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
 import 'package:listree/repository/usecases/export.dart';
-import 'package:listree/widgets/item_button.dart';
-import 'package:listree/widgets/item_view.dart';
+import 'package:listree/widgets/collapsible_button.dart';
 
-class ItemTile extends StatelessWidget {
-  final MonthlyBill item;
+class BillItem extends StatelessWidget {
+  final MonthlyBill _monthlyBill;
 
-  ItemTile(this.item);
+  BillItem(this._monthlyBill);
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(item.id.toString()),
+      key: Key(_monthlyBill.id.toString()),
       child: _item(),
       background: Container(color: Colors.cyan),
       secondaryBackground: Container(color: Colors.red),
@@ -25,8 +25,8 @@ class ItemTile extends StatelessWidget {
   Widget _item() {
     return Obx(
       () {
-        final bool _showPaid = item.showPaid;
-        final bool _showOptions = item.showOptions;
+        final bool _showPaid = _monthlyBill.showPaid;
+        final bool _showOptions = _monthlyBill.showOptions;
         final bool _shrunken = _showPaid || _showOptions;
 
         return Row(
@@ -38,7 +38,7 @@ class ItemTile extends StatelessWidget {
         );
       },
     );
-      }
+  }
 
   Widget _options(bool _showOptions) {
     return _showOptions
@@ -46,14 +46,14 @@ class ItemTile extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               VerticalDivider(width: 2),
-              ItemButton(
+              CollapsibleButton(
                 color: Colors.redAccent,
                 iconColor: Colors.white,
                 icon: Icons.list_alt,
-                onPress: () => ItemView(item).show(),
+                onPress: () => BillViewer(_monthlyBill).show(),
               ),
               VerticalDivider(width: 2),
-              ItemButton(
+              CollapsibleButton(
                 color: Colors.redAccent,
                 iconColor: Colors.white,
                 icon: Icons.delete,
@@ -82,7 +82,7 @@ class ItemTile extends StatelessWidget {
             ],
           ),
         ),
-        onTap: () => item.expand(),
+        onTap: () => _monthlyBill.expand(),
       ),
     );
   }
@@ -96,7 +96,7 @@ class ItemTile extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                'R\$ ${item.formattedValue}',
+                'R\$ ${_monthlyBill.formattedValue}',
                 maxLines: 1,
               ),
             ),
@@ -104,8 +104,9 @@ class ItemTile extends StatelessWidget {
   }
 
   Widget _date(bool _shrunken) {
-    final DateTime d = item.dateTime;
+    final DateTime d = _monthlyBill.dueDate;
     final String date = '${d.day}/${d.month}/${d.year.toString().substring(2)}';
+
     return _shrunken
         ? Container()
         : Container(
@@ -126,7 +127,7 @@ class ItemTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 8),
         child: Text(
-          item.title,
+          _monthlyBill.title,
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           style: const TextStyle(
@@ -144,9 +145,9 @@ class ItemTile extends StatelessWidget {
             children: [
               VerticalDivider(width: 2),
               Obx(
-                () => ItemButton(
+                () => CollapsibleButton(
                   color: Colors.cyan,
-                  iconColor: item.paid ? Colors.yellow : Colors.white,
+                  iconColor: _monthlyBill.paid ? Colors.yellow : Colors.white,
                   icon: Icons.paid,
                   onPress: () => _setPaid(),
                 ),
@@ -165,10 +166,10 @@ class ItemTile extends StatelessWidget {
 
     switch (direction) {
       case DismissDirection.startToEnd:
-        item.showPaid = true;
+        _monthlyBill.showPaid = true;
         break;
       case DismissDirection.endToStart:
-        item.showOptions = true;
+        _monthlyBill.showOptions = true;
         break;
       default:
         break;
@@ -181,17 +182,18 @@ class ItemTile extends StatelessWidget {
     final MonthlyBillsDAO _dao = Get.find();
     final List<MonthlyBill> _currentList = _dao.data;
 
-    _currentList.forEach((bill) {
-      if (bill.id != item.id) {
-        bill.expand();
+    _currentList.forEach((item) {
+      if (item.id != _monthlyBill.id) {
+        item.expand();
       }
     });
   }
 
-  void _setPaid() async => await item.updatePaid(!item.paid, refreshData: false);
+  void _setPaid() async =>
+      await _monthlyBill.updatePaid(!_monthlyBill.paid, refreshData: false);
 
   Future<void> _deleteItem() async {
-    final bool _deleted = await item.delete();
+    final bool _deleted = await _monthlyBill.delete();
     await _confirmDismiss(dismiss: _deleted);
     await Get.find<MonthlyBillsDAO>().updateData();
   }

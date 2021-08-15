@@ -14,8 +14,10 @@ abstract class Savable {
 
   DateTime get lastUpdate => _lastUpdate.value;
 
-  String get lastUpdateDate =>
+  String get lastUpdateString =>
       [lastUpdate.day, lastUpdate.month, lastUpdate.year].join('/');
+
+  DateTime get lastUpdateDate => _lastUpdate.value;
 
   /// Setters
   set title(String newTitle) => _title.value = newTitle;

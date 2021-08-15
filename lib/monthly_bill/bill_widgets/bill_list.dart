@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:listree/widgets/item_tile.dart';
+import 'package:listree/monthly_bill/bill_widgets/bill_item.dart';
 
-class ListItems extends StatelessWidget {
+class BillList extends StatelessWidget {
   final RxList items;
 
-  const ListItems(this.items);
+  const BillList(this.items);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ListItems extends StatelessWidget {
               child: Obx(
                 () => ListView.builder(
                   itemCount: items.length,
-                  itemBuilder: (ctx, i) => ItemTile(items[i]),
+                  itemBuilder: (ctx, i) => BillItem(items[i]),
                 ),
               ),
             );
@@ -61,7 +61,7 @@ class ListItems extends StatelessWidget {
             Container(
               width: 80,
               alignment: Alignment.centerRight,
-              child: const Text('Data'),
+              child: const Text('Vencimento'),
             ),
             Container(
               width: 100,

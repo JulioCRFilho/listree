@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:listree/config/local_notifications/local_notifications.dart';
+import 'package:listree/settings/local_notifications/local_notifications.dart';
 import 'package:listree/repository/datasources/interfaces/monthly_bill_interface.dart';
-import 'package:listree/repository/datasources/monthly_bills_dao.dart';
+import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
 import 'package:listree/repository/entities/export.dart';
 
 class MonthlyBill extends RxController
@@ -14,7 +14,7 @@ class MonthlyBill extends RxController
       ..id = _map['id']
       ..title = _map['title']
       ..description = _map['description']
-      ..dateTime = DateTime.parse(_map['dateTime'])
+      ..dueDate = DateTime.parse(_map['dateTime'])
       ..repeatCount = _map['repeatCount'] ?? 0
       ..value = double.tryParse(_map['value'].toString()) ?? 0
       ..pay = _map['paid'] == 1
@@ -30,7 +30,7 @@ class MonthlyBill extends RxController
     return {
       'title': title,
       'description': description,
-      'dateTime': dateTime.toIso8601String(),
+      'dateTime': dueDate.toIso8601String(),
       'repeatCount': repeatCount,
       'paid': paid ? 1 : 0,
       'lastUpdate': lastUpdate.toIso8601String(),
