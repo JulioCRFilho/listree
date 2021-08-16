@@ -8,7 +8,7 @@ class BillViewer {
   RxBool _editing = false.obs;
 
   final MonthlyBill _bill;
-  final bool _creating;
+  final bool creating, notification;
 
   final TextEditingController _title = TextEditingController();
   final TextEditingController _description = TextEditingController();
@@ -19,7 +19,13 @@ class BillViewer {
   late final Rx<DateTime> _lastUpdate;
   late final Rx<DateTime> _selectedDateTime;
 
-  BillViewer(this._bill, [this._creating = false]);
+  BillViewer(
+    this._bill, {
+    this.creating = false,
+    this.notification = false,
+  }) {
+    assert(!notification || !creating);
+  }
 
   void show() async {
     _title.text = _bill.title;
@@ -63,7 +69,11 @@ class BillViewer {
     );
   }
 
-  Column _head() {
+  Widget _head() {
+    return notification ? _notificationHead() : _editableHead();
+  }
+
+  Column _editableHead() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -71,7 +81,7 @@ class BillViewer {
           () => Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _editing.value || _creating
+              _editing.value || creating
                   ? IconButton(
                       icon: Icon(Icons.done),
                       onPressed: () => _updateOrCreateItem(),
@@ -79,10 +89,10 @@ class BillViewer {
                   : Container(),
               IconButton(
                 icon: Icon(
-                  _editing.value || _creating ? Icons.close : Icons.edit,
+                  _editing.value || creating ? Icons.close : Icons.edit,
                 ),
                 onPressed: () {
-                  if (_creating) {
+                  if (creating) {
                     Get.close(1);
                   } else {
                     _editing.value = !_editing.value;
@@ -93,24 +103,17 @@ class BillViewer {
           ),
         ),
         Obx(
-          () => Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _editing.value || _creating
-                  ? Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _editable(_title, isTitle: true),
-                      ),
-                    )
-                  : Flexible(
-                      child: Text(
-                        _bill.title,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+          () => Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _editing.value || creating
+                  ? _editable(_title, isTitle: true)
+                  : Text(
+                      _bill.title,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
                     ),
-            ],
+            ),
           ),
         ),
       ],
@@ -152,7 +155,7 @@ class BillViewer {
       ),
       Obx(
         () => Flexible(
-          child: _editing.value && editable || _creating && editable
+          child: _editing.value && editable || creating && editable
               ? _editable(_controller, isLast: last)
               : Text(_controller.text),
         ),
@@ -206,7 +209,7 @@ class BillViewer {
               _bill.repeatCount;
 
     final bool _success =
-        _creating ? await _bill.create() : await _bill.update();
+        creating ? await _bill.create() : await _bill.update();
 
     if (_success) {
       _editing.value = false;
@@ -264,7 +267,7 @@ class BillViewer {
           ),
           Expanded(
             child: InkWell(
-              onTap: () => _editing.value && editable || _creating && editable
+              onTap: () => _editing.value && editable || creating && editable
                   ? _selectNewDateTime(_selectedDateTime.value)
                   : null,
               child: Container(
@@ -272,7 +275,7 @@ class BillViewer {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.rectangle,
-                  border: _editing.value && editable || _creating && editable
+                  border: _editing.value && editable || creating && editable
                       ? Border.all()
                       : null,
                 ),
@@ -295,6 +298,26 @@ class BillViewer {
   _selectNewDateTime(DateTime _current) async {
     final DateTime? _selected = await DateTimePicker.show(_current);
     if (_selected != null) _selectedDateTime.value = _selected;
+  }
+
+  Widget _notificationHead() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            //TODO: create logic to reduce parcels and reschedule with new date or delete based on repeat
+          },
+          child: Text('Confirmar pagamento'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            //TODO: reuse the reschedule with date tomorrow
+          },
+          child: Text('Repetir amanhã'),
+        ),
+      ],
+    );
   }
 }
 

@@ -8,6 +8,7 @@ import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  //TODO: refactor de DAOs' initialization based on flow
   Get.put(await MonthlyBillsDAO()());
   Get.put(await LocalNotifications()());
 

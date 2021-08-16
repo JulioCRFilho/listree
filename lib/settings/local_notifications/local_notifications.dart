@@ -1,4 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:listree/monthly_bill/bill_widgets/bill_viewer.dart';
+import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
+import 'package:listree/repository/usecases/export.dart';
 import 'package:listree/settings/local_notifications/m_local_notifications.dart';
 
 class LocalNotifications with MLocalNotifications {
@@ -37,9 +41,15 @@ class LocalNotifications with MLocalNotifications {
     return this;
   }
 
-  Future _selectNotification(String? payload) {
-    print('notificação selecionada $payload');
-    return Future.value(payload);
+  Future<void> _selectNotification(String? _id) async {
+    if (_id == null || _id.isEmpty) return;
+
+    final MonthlyBillsDAO _dao = Get.find();
+    final Map<String,dynamic> _billMap = await _dao.getById(int.parse(_id));
+    final MonthlyBill _selectedBill = MonthlyBill.fromMap(_billMap);
+
+    _selectedBill.updatePaid(false, refreshData: false);
+    BillViewer(_selectedBill, notification: true).show();
   }
 
   Future _iosReceivedLocalNotification(

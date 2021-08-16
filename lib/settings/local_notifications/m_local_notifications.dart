@@ -65,6 +65,7 @@ mixin MLocalNotifications {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
+      payload: _bill.id.toString(),
     );
   }
 }

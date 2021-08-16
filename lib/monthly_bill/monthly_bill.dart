@@ -16,16 +16,13 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
         backgroundColor: Colors.black54,
         actions: [
           IconButton(
+            icon: Icon(Icons.refresh),
             onPressed: () async {
               final pendingNotifications = await Get.find<LocalNotifications>()
                   .plugin
                   .pendingNotificationRequests();
-              pendingNotifications.forEach((element) {
-                print('${element.id}  ${element.title}');
-              });
                 print(pendingNotifications.length);
             },
-            icon: Icon(Icons.refresh),
           ),
         ],
       ),

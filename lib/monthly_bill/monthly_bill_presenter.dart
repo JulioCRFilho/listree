@@ -8,6 +8,6 @@ mixin MonthlyBillPresenter {
 
   void createItem() {
     final MonthlyBill _bill = MonthlyBill();
-    return BillViewer(_bill, true).show();
+    return BillViewer(_bill, creating: true).show();
   }
 }

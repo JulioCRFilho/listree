@@ -70,11 +70,12 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
   Future<Map<String, Object?>> getById(int _id) async {
     final List<Map<String, dynamic>> _result = await db.query(
       _table,
-      columns: [ConfigDao.id],
       where: '${ConfigDao.id} = ?',
       whereArgs: [_id],
       limit: 1,
     );
+
+    print(_result);
     return _result.first;
   }
 
