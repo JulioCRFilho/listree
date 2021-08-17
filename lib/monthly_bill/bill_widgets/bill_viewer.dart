@@ -8,7 +8,8 @@ class BillViewer {
   RxBool _editing = false.obs;
 
   final MonthlyBill _bill;
-  final bool creating, notification;
+  final Rx<bool> _creating = false.obs;
+  final Rx<bool> _notification = false.obs;
 
   final TextEditingController _title = TextEditingController();
   final TextEditingController _description = TextEditingController();
@@ -21,8 +22,8 @@ class BillViewer {
 
   BillViewer(
     this._bill, {
-    this.creating = false,
-    this.notification = false,
+    bool creating = false,
+    bool notification = false,
   }) {
     assert(!notification || !creating);
   }
@@ -70,7 +71,7 @@ class BillViewer {
   }
 
   Widget _head() {
-    return notification ? _notificationHead() : _editableHead();
+    return _notification.value ? _notificationHead() : _editableHead();
   }
 
   Column _editableHead() {
@@ -81,7 +82,7 @@ class BillViewer {
           () => Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _editing.value || creating
+              _editing.value || _creating.value
                   ? IconButton(
                       icon: Icon(Icons.done),
                       onPressed: () => _updateOrCreateItem(),
@@ -89,10 +90,10 @@ class BillViewer {
                   : Container(),
               IconButton(
                 icon: Icon(
-                  _editing.value || creating ? Icons.close : Icons.edit,
+                  _editing.value || _creating.value ? Icons.close : Icons.edit,
                 ),
                 onPressed: () {
-                  if (creating) {
+                  if (_creating.value) {
                     Get.close(1);
                   } else {
                     _editing.value = !_editing.value;
@@ -106,7 +107,7 @@ class BillViewer {
           () => Flexible(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: _editing.value || creating
+              child: _editing.value || _creating.value
                   ? _editable(_title, isTitle: true)
                   : Text(
                       _bill.title,
@@ -155,7 +156,7 @@ class BillViewer {
       ),
       Obx(
         () => Flexible(
-          child: _editing.value && editable || creating && editable
+          child: _editing.value && editable || _creating.value && editable
               ? _editable(_controller, isLast: last)
               : Text(_controller.text),
         ),
@@ -209,7 +210,7 @@ class BillViewer {
               _bill.repeatCount;
 
     final bool _success =
-        creating ? await _bill.create() : await _bill.update();
+        _creating.value ? await _bill.create() : await _bill.update();
 
     if (_success) {
       _editing.value = false;
@@ -267,7 +268,7 @@ class BillViewer {
           ),
           Expanded(
             child: InkWell(
-              onTap: () => _editing.value && editable || creating && editable
+              onTap: () => _editing.value && editable || _creating.value && editable
                   ? _selectNewDateTime(_selectedDateTime.value)
                   : null,
               child: Container(
@@ -275,7 +276,7 @@ class BillViewer {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.rectangle,
-                  border: _editing.value && editable || creating && editable
+                  border: _editing.value && editable || _creating.value && editable
                       ? Border.all()
                       : null,
                 ),
@@ -318,6 +319,8 @@ class BillViewer {
 
               //TODO: implement dialog asking to exclude bill
             }
+
+            _notification.value = false;
           },
           child: Text('Confirmar pagamento'),
         ),
@@ -325,6 +328,8 @@ class BillViewer {
           onPressed: () {
             _bill.dueDate = _bill.dueDate.add(Duration(days: 1));
             _bill.registerAlarm<MonthlyBill>(_bill);
+
+            _notification.value = false;
           },
           child: Text('Repetir amanhã'),
         ),
