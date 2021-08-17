@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listree/repository/entities/export.dart';
-import 'package:listree/repository/entities/extendedEntities/savable_alarm.dart';
 import 'package:listree/settings/local_notifications/local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
