@@ -312,7 +312,7 @@ class BillViewer {
               _bill.repeatCount = _bill.repeatCount - 1;
               final Duration _currentMonthDays = _bill.dueDate.month.days;
               _bill.dueDate = _bill.dueDate.add(_currentMonthDays);
-              _bill.registerAlarm(_bill);
+              _bill.registerAlarm<MonthlyBill>(_bill);
             } else {
               _bill.repeatCount = 0;
 
