@@ -306,13 +306,25 @@ class BillViewer {
       children: [
         ElevatedButton(
           onPressed: () {
-            //TODO: create logic to reduce parcels and reschedule with new date or delete based on repeat
+            _bill.updatePaid(true, refreshData: false);
+
+            if (_bill.repeatCount > 1) {
+              _bill.repeatCount = _bill.repeatCount - 1;
+              final Duration _currentMonthDays = _bill.dueDate.month.days;
+              _bill.dueDate = _bill.dueDate.add(_currentMonthDays);
+              _bill.registerAlarm(_bill);
+            } else {
+              _bill.repeatCount = 0;
+
+              //TODO: implement dialog asking to exclude bill
+            }
           },
           child: Text('Confirmar pagamento'),
         ),
         ElevatedButton(
           onPressed: () {
-            //TODO: reuse the reschedule with date tomorrow
+            _bill.dueDate = _bill.dueDate.add(Duration(days: 1));
+            _bill.registerAlarm<MonthlyBill>(_bill);
           },
           child: Text('Repetir amanhã'),
         ),

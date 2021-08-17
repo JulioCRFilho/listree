@@ -3,8 +3,8 @@ import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
 import 'package:listree/repository/datasources/interfaces/monthly_bill_interface.dart';
 import 'package:listree/repository/entities/export.dart';
 
-class MonthlyBill extends RxController
-    with Alarm, Money, Savable, Drag
+class MonthlyBill extends Alarm
+    with Money, Drag
     implements MonthlyBillInterface {
   MonthlyBill();
 

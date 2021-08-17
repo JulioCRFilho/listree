@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:listree/repository/usecases/export.dart';
+import 'package:listree/repository/entities/export.dart';
+import 'package:listree/repository/entities/extendedEntities/savable_alarm.dart';
 import 'package:listree/settings/local_notifications/local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-abstract class Alarm {
+abstract class Alarm with Savable {
   Rx<DateTime> _dueDate = DateTime.now().obs;
 
   RxInt _repeatCount = 1.obs;
@@ -34,7 +35,6 @@ abstract class Alarm {
   Future<void> cancelAlarm(int _id) async =>
       await Get.find<LocalNotifications>().cancelAlarmById(_id);
 
-  @protected
-  Future<void> registerAlarm(MonthlyBill _bill) async =>
-      await Get.find<LocalNotifications>().scheduleNewNotification(_bill);
+  Future<void> registerAlarm<T extends Alarm>(T _notification) async =>
+      await Get.find<LocalNotifications>().scheduleNewNotification<T>(_notification);
 }
