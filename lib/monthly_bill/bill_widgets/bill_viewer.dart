@@ -73,7 +73,8 @@ class BillViewer {
   }
 
   Widget _head() {
-    return _notification.value ? _notificationHead() : _editableHead();
+    return Obx(
+        () => _notification.value ? _notificationHead() : _editableHead());
   }
 
   Column _editableHead() {
@@ -317,16 +318,19 @@ class BillViewer {
               _bill.repeatCount = _bill.repeatCount - 1;
               final Duration _currentMonthDays = _bill.dueDate.month.days;
               _bill.dueDate = _bill.dueDate.add(_currentMonthDays);
+
+              _bill.update();
               _bill.registerAlarm<MonthlyBill>(_bill);
 
               //TODO: implement bill update in dao before registering the alarm to the next month
+              _notification.value = false;
             } else {
               _bill.repeatCount = 0;
 
               //TODO: implement dialog asking to exclude bill
+              _bill.delete();
+              Get.close(1);
             }
-
-            _notification.value = false;
           },
           child: Text('Confirmar pagamento'),
         ),
