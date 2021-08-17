@@ -26,6 +26,8 @@ class BillViewer {
     bool notification = false,
   }) {
     assert(!notification || !creating);
+    _creating.value = creating;
+    _notification.value = notification;
   }
 
   void show() async {
@@ -268,17 +270,19 @@ class BillViewer {
           ),
           Expanded(
             child: InkWell(
-              onTap: () => _editing.value && editable || _creating.value && editable
-                  ? _selectNewDateTime(_selectedDateTime.value)
-                  : null,
+              onTap: () =>
+                  _editing.value && editable || _creating.value && editable
+                      ? _selectNewDateTime(_selectedDateTime.value)
+                      : null,
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.rectangle,
-                  border: _editing.value && editable || _creating.value && editable
-                      ? Border.all()
-                      : null,
+                  border:
+                      _editing.value && editable || _creating.value && editable
+                          ? Border.all()
+                          : null,
                 ),
                 child: Text(
                   _dateTime,
@@ -314,6 +318,8 @@ class BillViewer {
               final Duration _currentMonthDays = _bill.dueDate.month.days;
               _bill.dueDate = _bill.dueDate.add(_currentMonthDays);
               _bill.registerAlarm<MonthlyBill>(_bill);
+
+              //TODO: implement bill update in dao before registering the alarm to the next month
             } else {
               _bill.repeatCount = 0;
 
