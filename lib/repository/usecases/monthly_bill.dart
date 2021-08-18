@@ -70,6 +70,7 @@ class MonthlyBill extends Alarm
         await _dao.updateItem(id, toMap, refreshData: refreshData);
 
     if (_updated) {
+      print('atualizado: $toMap');
       await super.cancelAlarm(id);
       await super.registerAlarm(this);
     }

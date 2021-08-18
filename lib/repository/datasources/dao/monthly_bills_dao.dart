@@ -75,7 +75,6 @@ class MonthlyBillsDAO extends GetxController with ConfigDao {
       limit: 1,
     );
 
-    print(_result);
     return _result.first;
   }
 

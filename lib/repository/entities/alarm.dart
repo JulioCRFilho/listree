@@ -12,6 +12,8 @@ abstract class Alarm with Savable {
   ///Getters
   DateTime get dueDate => _dueDate.value;
 
+  Rx<DateTime> get dueDateObs => _dueDate;
+
   String get dateTimeFormatted => [
         dueDate.day,
         dueDate.month,

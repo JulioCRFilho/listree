@@ -14,6 +14,8 @@ abstract class Savable {
 
   DateTime get lastUpdate => _lastUpdate.value;
 
+  Rx<DateTime> get lastUpdateObs => _lastUpdate;
+
   String get lastUpdateString => [
         lastUpdate.day,
         lastUpdate.month.toString().padLeft(2, '0'),

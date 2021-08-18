@@ -5,20 +5,19 @@ import 'package:listree/repository/usecases/export.dart';
 import 'package:listree/widgets/date_time_picker.dart';
 
 class BillViewer {
-  RxBool _editing = false.obs;
-
   final MonthlyBill _bill;
-  final Rx<bool> _creating = false.obs;
-  final Rx<bool> _notification = false.obs;
+
+  final RxBool _editing = false.obs;
+  final RxBool _creating = false.obs;
+  final RxBool _notification = false.obs;
+
+  final Rx<DateTime> _selectedDate = DateTime.now().obs;
 
   final TextEditingController _title = TextEditingController();
-  final TextEditingController _description = TextEditingController();
   final TextEditingController _value = TextEditingController();
-  final TextEditingController _recurrent = TextEditingController();
   final TextEditingController _parcels = TextEditingController();
-
-  late final Rx<DateTime> _lastUpdate;
-  late final Rx<DateTime> _selectedDateTime;
+  final TextEditingController _recurrent = TextEditingController();
+  final TextEditingController _description = TextEditingController();
 
   BillViewer(
     this._bill, {
@@ -31,14 +30,7 @@ class BillViewer {
   }
 
   void show() async {
-    _title.text = _bill.title;
-    _description.text = _bill.description ?? '';
-    _value.text = _bill.formattedValue;
-    _recurrent.text = _bill.repeatCount > 1 ? 'Sim' : 'Não';
-    _parcels.text = '${_bill.repeatCount} restantes';
-
-    _lastUpdate = _bill.lastUpdate.obs;
-    _selectedDateTime = _bill.dueDate.obs;
+    _updateControllers();
 
     await Get.dialog(
       AlertDialog(
@@ -50,6 +42,16 @@ class BillViewer {
     );
   }
 
+  void _updateControllers() {
+    _title.text = _bill.title;
+    _description.text = _bill.description ?? '';
+    _value.text = _bill.formattedValue;
+    _recurrent.text = _bill.repeatCount > 1 ? 'Sim' : 'Não';
+    _parcels.text = '${_bill.repeatCount} restantes';
+
+    _selectedDate.value = _bill.dueDate;
+  }
+
   Widget _content() {
     return SingleChildScrollView(
       child: Padding(
@@ -57,25 +59,51 @@ class BillViewer {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _editableRow('Valor:', _value),
-            _dateTimeRow('Vencimento:', DateTimeType.dateOnly),
-            _dateTimeRow('Próximo alarme:', DateTimeType.dateTime,
-                editable: false),
-            _editableRow('Parcelas:', _parcels),
-            _editableRow('Recorrente:', _recurrent, editable: false),
-            _dateTimeRow('Última atualização:', DateTimeType.dateOnly,
-                editable: false),
-            _editableRow('Descrição:', _description, last: true),
+            _editableRow(
+              'Valor:',
+              _value,
+            ),
+            _dateTimeRow(
+              'Vencimento:',
+              _selectedDate,
+              DateTimeType.dateOnly,
+            ),
+            _dateTimeRow(
+              'Próximo alarme:',
+              //TODO: implement selectedAlarmDateTime into MonthlyBill
+              _selectedDate,
+              DateTimeType.dateTime,
+              editable: false,
+            ),
+            //TODO: fix bug parcels keeping TEController value after cancelling the edition
+            _editableRow(
+              'Parcelas:',
+              _parcels,
+            ),
+            _editableRow(
+              'Recorrente:',
+              _recurrent,
+              editable: false,
+            ),
+            _dateTimeRow(
+              'Última atualização:',
+              _bill.lastUpdateObs,
+              DateTimeType.dateOnly,
+              editable: false,
+            ),
+            _editableRow(
+              'Descrição:',
+              _description,
+              last: true,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _head() {
-    return Obx(
-        () => _notification.value ? _notificationHead() : _editableHead());
-  }
+  Widget _head() =>
+      Obx(() => _notification.value ? _notificationHead() : _editableHead());
 
   Column _editableHead() {
     return Column(
@@ -205,7 +233,7 @@ class BillViewer {
     _bill
       ..title = _title.text
       ..description = _description.text
-      ..dueDate = _selectedDateTime.value
+      ..dueDate = _selectedDate.value
       ..lastUpdate = DateTime.now()
       ..value = value ?? _bill.rawValue
       ..repeatCount =
@@ -236,29 +264,11 @@ class BillViewer {
 
   Widget _dateTimeRow(
     String label,
-    DateTimeType alarm, {
+    Rx<DateTime> dateTime,
+    DateTimeType dateType, {
     bool editable = true,
-    bool lastUpdate = false,
   }) {
     return Obx(() {
-      final DateTime d =
-          lastUpdate ? _lastUpdate.value : _selectedDateTime.value;
-
-      late final String _dateTime;
-
-      switch (alarm) {
-        case DateTimeType.dateOnly:
-          _dateTime =
-              '${d.day}/${d.month.toString().padLeft(2, '0')}/${d.year}';
-          break;
-
-        case DateTimeType.dateTime:
-          _dateTime = '${d.hour}:${d.minute.toString().padLeft(2, '0')}'
-              ' ${d.day.toString().padLeft(2, '0')}'
-              '/${d.month.toString().padLeft(2, '0')}';
-          break;
-      }
-
       return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -273,7 +283,7 @@ class BillViewer {
             child: InkWell(
               onTap: () =>
                   _editing.value && editable || _creating.value && editable
-                      ? _selectNewDateTime(_selectedDateTime.value)
+                      ? _selectNewDateTime(_selectedDate.value)
                       : null,
               child: Container(
                 padding: const EdgeInsets.all(4),
@@ -286,7 +296,7 @@ class BillViewer {
                           : null,
                 ),
                 child: Text(
-                  _dateTime,
+                  _parseDateTime(dateTime.value, dateType),
                   textAlign: TextAlign.end,
                   style: TextStyle(
                     color: Colors.black,
@@ -303,7 +313,7 @@ class BillViewer {
 
   _selectNewDateTime(DateTime _current) async {
     final DateTime? _selected = await DateTimePicker.show(_current);
-    if (_selected != null) _selectedDateTime.value = _selected;
+    if (_selected != null) _selectedDate.value = _selected;
   }
 
   Widget _notificationHead() {
@@ -311,40 +321,70 @@ class BillViewer {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ElevatedButton(
-          onPressed: () {
+          child: Text('Confirmar pagamento'),
+          onPressed: () async {
             _bill.updatePaid(true, refreshData: false);
 
             if (_bill.repeatCount > 1) {
               _bill.repeatCount = _bill.repeatCount - 1;
               final Duration _currentMonthDays = _bill.dueDate.month.days;
-              _bill.dueDate = _bill.dueDate.add(_currentMonthDays);
-
-              _bill.update();
-              _bill.registerAlarm<MonthlyBill>(_bill);
-
-              //TODO: implement bill update in dao before registering the alarm to the next month
-              _notification.value = false;
+              await _rescheduleBill(_currentMonthDays);
             } else {
               _bill.repeatCount = 0;
 
-              //TODO: implement dialog asking to exclude bill
-              _bill.delete();
-              Get.close(1);
+              await Get.defaultDialog(
+                title: 'Deseja remover essa despesa?',
+                middleText: 'Esta despesa não possui mais parcelas',
+                barrierDismissible: false,
+                textCancel: 'Manter despesa',
+                textConfirm: 'Remover',
+                onCancel: () => Get.close(1),
+                onConfirm: () async {
+                  await _bill.delete();
+                  Get.close(2);
+                },
+              );
             }
           },
-          child: Text('Confirmar pagamento'),
         ),
         ElevatedButton(
-          onPressed: () {
-            _bill.dueDate = _bill.dueDate.add(Duration(days: 1));
-            _bill.registerAlarm<MonthlyBill>(_bill);
-
-            _notification.value = false;
-          },
           child: Text('Repetir amanhã'),
+          onPressed: () async => await _rescheduleBill(Duration(days: 1)),
         ),
       ],
     );
+  }
+
+  Future<void> _rescheduleBill(Duration _duration) async {
+    _bill.dueDate = _bill.dueDate.add(_duration);
+    final bool _updated = await _bill.update();
+
+    if (!_updated) {
+      return await Get.showSnackbar(
+        GetBar(
+          duration: Duration(seconds: 3),
+          title: 'Falha ao reagendar sua despesa',
+          message:
+              'Acesse os detalhes da despesa e reagende manualmente selecionando uma nova data.',
+        ),
+      );
+    }
+
+    await _bill.registerAlarm<MonthlyBill>(_bill);
+    _updateControllers();
+    _notification.value = false;
+  }
+}
+
+String _parseDateTime(DateTime d, DateTimeType type) {
+  switch (type) {
+    case DateTimeType.dateOnly:
+      return '${d.day}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+
+    case DateTimeType.dateTime:
+      return '${d.hour}:${d.minute.toString().padLeft(2, '0')}'
+          ' ${d.day.toString().padLeft(2, '0')}'
+          '/${d.month.toString().padLeft(2, '0')}';
   }
 }
 

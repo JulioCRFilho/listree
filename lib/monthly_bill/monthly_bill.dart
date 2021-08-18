@@ -16,7 +16,7 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
         backgroundColor: Colors.black54,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: Icon(Icons.undo),
             onPressed: () async {
               final pendingNotifications = await Get.find<LocalNotifications>()
                   .plugin
