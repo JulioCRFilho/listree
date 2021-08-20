@@ -14,7 +14,7 @@ class BillViewer {
   final Rx<DateTime> _selectedDate = DateTime.now().obs;
 
   final TextEditingController _title = TextEditingController();
-  final TextEditingController _value = TextEditingController();
+  final TextEditingController _price = TextEditingController();
   final TextEditingController _parcels = TextEditingController();
   final TextEditingController _recurrent = TextEditingController();
   final TextEditingController _description = TextEditingController();
@@ -39,15 +39,16 @@ class BillViewer {
         title: _head(),
         content: _content(),
       ),
+      barrierDismissible: !_notification.value,
     );
   }
 
   void _updateControllers() {
     _title.text = _bill.title;
     _description.text = _bill.description ?? '';
-    _value.text = _bill.formattedValue;
+    _price.text = _bill.formattedValue;
     _recurrent.text = _bill.repeatCount > 1 ? 'Sim' : 'Não';
-    _parcels.text = '${_bill.repeatCount} restantes';
+    _parcels.text = _bill.repeatCount.toString();
 
     _selectedDate.value = _bill.dueDate;
   }
@@ -61,7 +62,8 @@ class BillViewer {
           children: [
             _editableRow(
               'Valor:',
-              _value,
+              _bill.formattedValue,
+              _price,
             ),
             _dateTimeRow(
               'Vencimento:',
@@ -75,13 +77,14 @@ class BillViewer {
               DateTimeType.dateTime,
               editable: false,
             ),
-            //TODO: fix bug parcels keeping TEController value after cancelling the edition
             _editableRow(
               'Parcelas:',
+              _bill.repeatCount.toString(),
               _parcels,
             ),
             _editableRow(
               'Recorrente:',
+              _bill.repeatCount > 1 ? 'Sim' : 'Não',
               _recurrent,
               editable: false,
             ),
@@ -93,6 +96,7 @@ class BillViewer {
             ),
             _editableRow(
               'Descrição:',
+              _bill.description ?? '',
               _description,
               last: true,
             ),
@@ -127,6 +131,7 @@ class BillViewer {
                   if (_creating.value) {
                     Get.close(1);
                   } else {
+                    _updateControllers();
                     _editing.value = !_editing.value;
                   }
                 },
@@ -154,6 +159,7 @@ class BillViewer {
 
   Widget _editableRow(
     String _label,
+    String _value,
     TextEditingController _controller, {
     bool editable = true,
     bool last = false,
@@ -163,17 +169,20 @@ class BillViewer {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: _editableWidgets(_label, editable, _controller, last),
+            children:
+                _editableWidgets(_label, _value, editable, _controller, last),
           )
         : Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: _editableWidgets(_label, editable, _controller, last),
+            children:
+                _editableWidgets(_label, _value, editable, _controller, last),
           );
   }
 
   List<Widget> _editableWidgets(
     String _label,
+    String _value,
     bool editable,
     TextEditingController _controller,
     bool last,
@@ -189,7 +198,7 @@ class BillViewer {
         () => Flexible(
           child: _editing.value && editable || _creating.value && editable
               ? _editable(_controller, isLast: last)
-              : Text(_controller.text),
+              : Text(_value),
         ),
       ),
     ];
@@ -228,7 +237,7 @@ class BillViewer {
 
   Future<void> _updateOrCreateItem() async {
     final value =
-        double.tryParse(_value.text.substring(3).replaceAll(',', '.'));
+        double.tryParse(_price.text.substring(3).replaceAll(',', '.'));
 
     _bill
       ..title = _title.text

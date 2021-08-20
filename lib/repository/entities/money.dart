@@ -17,6 +17,6 @@ abstract class Money {
     //TODO: implement currency format method
 
     _rawValue.value = newValue;
-    _formattedValue.value = 'R\$ $newValue';
+    _formattedValue.value = '$_prefix $newValue';
   }
 }
