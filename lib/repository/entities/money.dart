@@ -14,7 +14,7 @@ abstract class Money {
 
   /// Setters
   set value(double newValue) {
-    //TODO: implement currency format method
+    //TODO: implement local currency format method
 
     _rawValue.value = newValue;
     _formattedValue.value = '$_prefix $newValue';

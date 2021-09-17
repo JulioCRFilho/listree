@@ -336,8 +336,7 @@ class BillViewer {
 
             if (_bill.repeatCount > 1) {
               _bill.repeatCount = _bill.repeatCount - 1;
-              final Duration _currentMonthDays = _bill.dueDate.month.days;
-              await _rescheduleBill(_currentMonthDays);
+              await _rescheduleForNextMonth();
             } else {
               _bill.repeatCount = 0;
 
@@ -347,7 +346,7 @@ class BillViewer {
                 barrierDismissible: false,
                 textCancel: 'Manter despesa',
                 textConfirm: 'Remover',
-                onCancel: () => Get.close(1),
+                onCancel: () async => await _rescheduleForNextMonth(),
                 onConfirm: () async {
                   await _bill.delete();
                   Get.close(2);
@@ -364,9 +363,19 @@ class BillViewer {
     );
   }
 
+  Future<void> _rescheduleForNextMonth() async {
+    final current = DateTime.now();
+    final daysInMonth = DateUtils.getDaysInMonth(current.year, current.month);
+    final month = Duration(days: daysInMonth);
+
+    await _rescheduleBill(month);
+  }
+
   Future<void> _rescheduleBill(Duration _duration) async {
     _bill.dueDate = _bill.dueDate.add(_duration);
     final bool _updated = await _bill.update();
+
+    print('mes agendado: ${_bill.dueDate}');
 
     if (!_updated) {
       return await Get.showSnackbar(
@@ -381,7 +390,7 @@ class BillViewer {
 
     await _bill.registerAlarm<MonthlyBill>(_bill);
     _updateControllers();
-    _notification.value = false;
+    Get.close(1);
   }
 }
 

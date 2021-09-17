@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 abstract class Savable {
-  late final int id;
+  late int id;
 
   RxString _title = 'Sem título'.obs;
   RxString? _description = ''.obs;

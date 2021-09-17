@@ -6,6 +6,7 @@ import 'package:listree/repository/entities/export.dart';
 class MonthlyBill extends Alarm
     with Money, Drag
     implements MonthlyBillInterface {
+
   MonthlyBill();
 
   factory MonthlyBill.fromMap(Map<String, dynamic> _map) {
@@ -83,9 +84,12 @@ class MonthlyBill extends Alarm
     final MonthlyBillsDAO _dao = Get.find();
     final bool _deleted = await _dao.delete(id, refreshData: refreshData);
 
-    if (_deleted) super.cancelAlarm(id);
+    if (_deleted) {
+      super.cancelAlarm(id);
+      _dao.addItemToRecoverableList = this;
+    }
 
-    return _deleted;
+      return _deleted;
   }
 
   @override

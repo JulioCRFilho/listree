@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listree/monthly_bill/bill_widgets/bill_list.dart';
 import 'package:listree/monthly_bill/monthly_bill_presenter.dart';
+import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
+import 'package:listree/repository/usecases/export.dart';
 import 'package:listree/settings/constants.dart';
-import 'package:listree/settings/local_notifications/local_notifications.dart';
 
-class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
+class MonthlyBillUI extends StatelessWidget with MonthlyBillPresenter {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,11 +18,20 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
         actions: [
           IconButton(
             icon: Icon(Icons.undo),
+            tooltip: 'Recuperar despesa excluída',
             onPressed: () async {
-              final pendingNotifications = await Get.find<LocalNotifications>()
-                  .plugin
-                  .pendingNotificationRequests();
-                print(pendingNotifications.length);
+              final MonthlyBillsDAO dao = Get.find();
+
+              final MonthlyBill? lastCachedBill = dao.recoverLastItemCached;
+
+              final bool? created =
+                  await lastCachedBill?.create(refreshData: true);
+
+              if (created == true) dao.removeRecoveredCached();
+              // final pendingNotifications = await Get.find<LocalNotifications>()
+              //     .plugin
+              //     .pendingNotificationRequests();
+              // print('pending notifications: ${pendingNotifications.length}');
             },
           ),
         ],
@@ -31,6 +41,7 @@ class MonthlyBill extends StatelessWidget with MonthlyBillPresenter {
         backgroundColor: Colors.grey,
         child: const Icon(Icons.add),
         onPressed: () => super.createItem(),
+        tooltip: 'Criar nova despesa',
       ),
     );
   }

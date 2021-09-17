@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:listree/repository/datasources/dao/config_dao.dart';
+import 'package:listree/repository/datasources/interfaces/cache_interface.dart';
 import 'package:listree/repository/usecases/export.dart';
 import 'package:sqflite/sqflite.dart';
 
-class MonthlyBillsDAO extends GetxController with ConfigDao {
+class MonthlyBillsDAO extends GetxController
+    with ConfigDao, CacheInterface<MonthlyBill> {
+
   static const String _table = 'monthly_bills';
 
   final RxList<MonthlyBill> _data = const <MonthlyBill>[].obs;

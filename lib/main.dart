@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:listree/settings/constants.dart';
 import 'package:listree/settings/local_notifications/local_notifications.dart';
-import 'package:listree/monthly_bill/monthly_bill.dart';
+import 'package:listree/monthly_bill/monthly_bill_ui.dart';
 import 'package:listree/repository/datasources/dao/monthly_bills_dao.dart';
 
 void main() async {
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: Constants.appName,
-      home: MonthlyBill(),
+      home: MonthlyBillUI(),
     );
   }
 }

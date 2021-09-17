@@ -33,7 +33,6 @@ class LocalNotifications with MLocalNotifications {
             onSelectNotification: _selectNotification,
           );
 
-      //TODO: consider if validateAlarms is a need
       // await super.validateAlarms(_list);
     } catch (e) {
       throw e;

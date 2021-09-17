@@ -195,7 +195,6 @@ class BillItem extends StatelessWidget {
   Future<void> _deleteItem() async {
     final bool _deleted = await _monthlyBill.delete();
     await _confirmDismiss(dismiss: _deleted);
-    //TODO: verify the below code line needing, since delete() updates the dao
-    await Get.find<MonthlyBillsDAO>().updateData();
+    // await Get.find<MonthlyBillsDAO>().updateData();
   }
 }
